@@ -1,0 +1,45 @@
+textarea {
+    border: none;
+    resize: none;
+    height: 100px;
+    font-size: 20px;
+    background-color: #efefef;
+    border-radius: 10px;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+#json_place {
+    height: 700px;
+    font-size: 20px;
+    background-color: #efefef;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+#session_variants {
+    /*overflow-y: hidden;*/
+    padding-left: 0;
+    font-size: 20px;
+}
+#session_variants:focus {
+    outline: none;
+}
+#session_variants>option {
+    text-align: center;
+}
+
+.variant {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.answer-variant {
+    width: 100%;
+}
+
+.delete-button {
+    width: 100%;
+}
