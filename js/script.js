@@ -1,6 +1,6 @@
 "use strict";
 
-function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return !!right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -8,11 +8,27 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return !!right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
+function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -23,26 +39,51 @@ var question_header = document.getElementById("question_header");
 var session_select = document.getElementById("session_variants");
 var json_place = document.getElementById('json_place');
 
-var OneChooseQuestion = /*#__PURE__*/function () {
+var Question = function Question() {
+  _classCallCheck(this, Question);
+
+  _defineProperty(this, "type", void 0);
+
+  _defineProperty(this, "sessions", void 0);
+
+  _defineProperty(this, "question_div", void 0);
+
+  _defineProperty(this, "question_header", void 0);
+};
+
+var OneChooseQuestion = /*#__PURE__*/function (_Question) {
+  _inherits(OneChooseQuestion, _Question);
+
+  var _super = _createSuper(OneChooseQuestion);
+
   function OneChooseQuestion() {
+    var _this;
+
     _classCallCheck(this, OneChooseQuestion);
 
-    _defineProperty(this, "type", 1);
+    _this = _super.call(this);
 
-    this.sessions = [];
-    this.question_div = document.createElement('div');
-    this.question_header = htmlToElement("<textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>");
-    this.question_body = htmlToElement("<div class=\"row\">\n                        <h4 class=\"col-3\">\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B \u043E\u0442\u0432\u0435\u0442\u043E\u0432</h4>\n                        <div class=\"col-4\"><button class=\"btn btn-success\" onclick=\"firstTypeQuestion.add_variant();\" id=\"add_one_choose_variant\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\u0430\u0440\u0438\u0430\u043D\u0442</button></div>\n                    </div>");
-    this.variants_node = htmlToElement('<div class="container" id="variants"></div>');
-    this.question_div.appendChild(this.question_body);
-    this.question_div.appendChild(this.variants_node);
-    this.question_textarea = this.question_header;
-    this.variant_divs = {};
-    this.variants_count = 0;
+    _defineProperty(_assertThisInitialized(_this), "type", 1);
+
+    _this.sessions = [];
+    _this.question_div = document.createElement('div');
+    _this.question_header = htmlToElement("<textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>");
+    _this.question_body = htmlToElement("<div class=\"row\">\n                        <h4 class=\"col-3\">\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B \u043E\u0442\u0432\u0435\u0442\u043E\u0432</h4>\n                        <div class=\"col-4\"><button class=\"btn btn-success\" onclick=\"firstTypeQuestion.add_variant();\" id=\"add_one_choose_variant\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\u0430\u0440\u0438\u0430\u043D\u0442</button></div>\n                    </div>");
+    _this.variants_node = htmlToElement('<div class="container" id="variants"></div>');
+
+    _this.question_div.appendChild(_this.question_body);
+
+    _this.question_div.appendChild(_this.variants_node);
+
+    _this.question_textarea = _this.question_header;
+    _this.variant_divs = {};
+    _this.variants_count = 0;
 
     for (var i = 0; i < 2; i++) {
-      this.add_variant();
+      _this.add_variant();
     }
+
+    return _this;
   }
 
   _createClass(OneChooseQuestion, [{
@@ -65,19 +106,32 @@ var OneChooseQuestion = /*#__PURE__*/function () {
         return null;
       }
 
+      this.variants_count--;
       delete this.variant_divs[uuid];
       this.renderVariants();
     }
   }, {
     key: "getVariants",
     value: function getVariants() {
-      var variants = {};
+      // let variants = {};
+      // for (let uuid in this.variant_divs) {
+      // let div = this.variant_divs[uuid];
+      // let input = div.getElementsByClassName(`answer-variant-${uuid}`)[0];
+      // let variant_name = div.getElementsByClassName("variant")[0].innerHTML;
+      //     variants[variant_name] = input.value;
+      // }
+      // return variants;
+      var variants = [];
 
       for (var uuid in this.variant_divs) {
         var div = this.variant_divs[uuid];
         var input = div.getElementsByClassName("answer-variant-".concat(uuid))[0];
         var variant_name = div.getElementsByClassName("variant")[0].innerHTML;
-        variants[variant_name] = input.value;
+        var variant = {
+          "variant_letter": variant_name,
+          "variant_text": input.value
+        };
+        variants.push(variant);
       }
 
       return variants;
@@ -178,7 +232,31 @@ var OneChooseQuestion = /*#__PURE__*/function () {
   }]);
 
   return OneChooseQuestion;
-}();
+}(Question);
+
+var EnterAnswerQuestion = /*#__PURE__*/function (_Question2) {
+  _inherits(EnterAnswerQuestion, _Question2);
+
+  var _super2 = _createSuper(EnterAnswerQuestion);
+
+  function EnterAnswerQuestion() {
+    var _this2;
+
+    _classCallCheck(this, EnterAnswerQuestion);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this2 = _super2.call.apply(_super2, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this2), "type", 4);
+
+    return _this2;
+  }
+
+  return EnterAnswerQuestion;
+}(Question);
 
 var firstTypeQuestion = new OneChooseQuestion();
 

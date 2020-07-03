@@ -9,10 +9,20 @@ var session_select = document.getElementById("session_variants");
 
 var json_place = document.getElementById('json_place');
 
-class OneChooseQuestion {
+
+class Question {
+    type;
+    sessions;
+    question_div;
+    question_header;
+}
+
+
+class OneChooseQuestion extends Question {
     type = 1;
 
     constructor(){
+        super();
         this.sessions = [];
         this.question_div = document.createElement('div');
         this.question_header = htmlToElement(`<textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>`);
@@ -65,18 +75,32 @@ class OneChooseQuestion {
         if (this.getVariantNodes().length <= 2){
             return null;
         }
+        this.variants_count--;
         delete this.variant_divs[uuid];
         this.renderVariants();
     }
 
     getVariants(){
-        let variants = {};
+        // let variants = {};
+        // for (let uuid in this.variant_divs) {
+            // let div = this.variant_divs[uuid];
+            // let input = div.getElementsByClassName(`answer-variant-${uuid}`)[0];
+            // let variant_name = div.getElementsByClassName("variant")[0].innerHTML;
+
+        //     variants[variant_name] = input.value;
+        // }
+        // return variants;
+        let variants = [];
         for (let uuid in this.variant_divs) {
             let div = this.variant_divs[uuid];
             let input = div.getElementsByClassName(`answer-variant-${uuid}`)[0];
             let variant_name = div.getElementsByClassName("variant")[0].innerHTML;
 
-            variants[variant_name] = input.value;
+            let variant = {
+                "variant_letter": variant_name,
+                "variant_text": input.value
+            }
+            variants.push(variant);
         }
         return variants;
     }
@@ -144,11 +168,15 @@ class OneChooseQuestion {
 
         return JSON.stringify(questionObject);
     }
-
-
 }
 
-var firstTypeQuestion = new OneChooseQuestion();
+
+class EnterAnswerQuestion extends Question {
+    type = 4
+}
+
+
+const firstTypeQuestion = new OneChooseQuestion();
 
 
 function select_session(){
