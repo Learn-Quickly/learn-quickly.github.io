@@ -397,3 +397,5 @@ function bodyLoaded() {
 
   renderQuestion();
 }
+
+window.onload = bodyLoaded;
