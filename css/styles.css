@@ -56,6 +56,19 @@ textarea:focus {
     outline: none;
 }
 
+#one_variant_input {
+	font-size: 40px;
+	border: 1px solid #757575;
+	border-right: none;
+	border-left: none;
+	border-top: none;
+	text-align: center;
+}
+
+#one_variant_input:focus {
+    outline: none;
+}
+
 .variant {
     font-size: 20px;
     font-weight: 600;

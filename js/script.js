@@ -113,14 +113,6 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
   }, {
     key: "getVariants",
     value: function getVariants() {
-      // let variants = {};
-      // for (let uuid in this.variant_divs) {
-      // let div = this.variant_divs[uuid];
-      // let input = div.getElementsByClassName(`answer-variant-${uuid}`)[0];
-      // let variant_name = div.getElementsByClassName("variant")[0].innerHTML;
-      //     variants[variant_name] = input.value;
-      // }
-      // return variants;
       var variants = [];
 
       for (var uuid in this.variant_divs) {
@@ -244,21 +236,72 @@ var EnterAnswerQuestion = /*#__PURE__*/function (_Question2) {
 
     _classCallCheck(this, EnterAnswerQuestion);
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this2 = _super2.call.apply(_super2, [this].concat(args));
+    _this2 = _super2.call(this);
 
     _defineProperty(_assertThisInitialized(_this2), "type", 4);
 
+    _this2.sessions = [];
+    _this2.question_div = document.createElement('div');
+    _this2.question_header = htmlToElement("<div class=\"col-11\">\n                            <textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>\n                        </div>");
+    _this2.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <input class=\"col-7\" id=\"one_variant_input\" type=\"text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\" onchange=\"fourthTypeQuestion.validateAnswerInput();\"/>\n                        </div>");
+
+    _this2.question_div.appendChild(_this2.question_body);
+
+    _this2.question_textarea = _this2.question_header.getElementsByClassName("question_textarea")[0];
+    _this2.answer_input = _this2.question_body.firstChild.nextSibling;
     return _this2;
   }
+
+  _createClass(EnterAnswerQuestion, [{
+    key: "validateAnswerInput",
+    value: function validateAnswerInput() {
+      var answer_string = this.answer_input.value.trim();
+      this.answer_input.value = answer_string;
+
+      if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
+        this.answer_input.style.borderColor = "#f44336";
+        return false;
+      } else {
+        this.answer_input.style.borderColor = "#757575";
+        return true;
+      }
+    }
+  }, {
+    key: "getAnswer",
+    value: function getAnswer() {
+      return this.answer_input.value.trim();
+    }
+  }, {
+    key: "toJson",
+    value: function toJson() {
+      var questionObject = {
+        "type": this.type,
+        "sessions": this.sessions,
+        "question_text": this.question_textarea.value.trim(),
+        "answer": this.getAnswer()
+      };
+
+      if (questionObject.question_text == "") {
+        return "Введите текст вопроса";
+      }
+
+      if (questionObject.sessions.length == 0) {
+        return "Выберите одну или несколько сессий";
+      }
+
+      if (!this.validateAnswerInput()) {
+        return "Ответ должен состоять из одного и только одного слова";
+      }
+
+      return JSON.stringify(questionObject);
+    }
+  }]);
 
   return EnterAnswerQuestion;
 }(Question);
 
 var firstTypeQuestion = new OneChooseQuestion();
+var fourthTypeQuestion = new EnterAnswerQuestion();
 
 function select_session() {
   var question = getQuestionObject();
@@ -267,6 +310,7 @@ function select_session() {
 
 function getQuestionObject() {
   var question;
+  localStorage.setItem("lastSelectedQuestion", question_type.value);
 
   switch (parseInt(question_type.value)) {
     case 1:
@@ -282,7 +326,7 @@ function getQuestionObject() {
       break;
 
     case 4:
-      question = firstTypeQuestion;
+      question = fourthTypeQuestion;
       break;
   }
 
@@ -344,4 +388,12 @@ function htmlToElement(html) {
   return template.content.firstChild;
 }
 
-renderQuestion();
+function bodyLoaded() {
+  var lastSelectedQuestion = localStorage.getItem("lastSelectedQuestion");
+
+  if (lastSelectedQuestion) {
+    question_type.value = lastSelectedQuestion;
+  }
+
+  renderQuestion();
+}

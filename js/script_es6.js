@@ -81,15 +81,6 @@ class OneChooseQuestion extends Question {
     }
 
     getVariants(){
-        // let variants = {};
-        // for (let uuid in this.variant_divs) {
-            // let div = this.variant_divs[uuid];
-            // let input = div.getElementsByClassName(`answer-variant-${uuid}`)[0];
-            // let variant_name = div.getElementsByClassName("variant")[0].innerHTML;
-
-        //     variants[variant_name] = input.value;
-        // }
-        // return variants;
         let variants = [];
         for (let uuid in this.variant_divs) {
             let div = this.variant_divs[uuid];
@@ -172,12 +163,69 @@ class OneChooseQuestion extends Question {
 
 
 class EnterAnswerQuestion extends Question {
-    type = 4
+    type = 4;
+
+    constructor(){
+        super();
+        this.sessions = [];
+        this.question_div = document.createElement('div');
+        this.question_header = htmlToElement(`<div class="col-11">
+                            <textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>
+                        </div>`);
+        this.question_body = htmlToElement(`<div class="row justify-content-center">
+                            <input class="col-7" id="one_variant_input" type="text" placeholder="Введите текст ответа" onchange="fourthTypeQuestion.validateAnswerInput();"/>
+                        </div>`);
+
+        this.question_div.appendChild(this.question_body);
+
+        this.question_textarea = this.question_header.getElementsByClassName("question_textarea")[0];
+        this.answer_input = this.question_body.firstChild.nextSibling;
+    }
+
+    validateAnswerInput(){
+        let answer_string = this.answer_input.value.trim();
+        this.answer_input.value = answer_string;
+        if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
+            this.answer_input.style.borderColor = "#f44336";
+            return false;
+        } else {
+            this.answer_input.style.borderColor = "#757575";
+            return true;
+        }
+    }
+
+    getAnswer(){
+        return this.answer_input.value.trim();
+    }
+
+    toJson(){
+        let questionObject = {
+            "type": this.type,
+            "sessions": this.sessions,
+            "question_text": this.question_textarea.value.trim(),
+            "answer": this.getAnswer(),
+        }
+
+        if (questionObject.question_text == ""){
+            return "Введите текст вопроса"
+        }
+        
+        if (questionObject.sessions.length == 0){
+            return "Выберите одну или несколько сессий";
+        }
+
+        if (!this.validateAnswerInput()) {
+            return "Ответ должен состоять из одного и только одного слова"
+        }
+
+        return JSON.stringify(questionObject);
+    }
+
 }
 
 
 const firstTypeQuestion = new OneChooseQuestion();
-
+const fourthTypeQuestion = new EnterAnswerQuestion();
 
 function select_session(){
     let question = getQuestionObject();
@@ -188,6 +236,7 @@ function select_session(){
 
 function getQuestionObject(){
     let question;
+    localStorage.setItem("lastSelectedQuestion", question_type.value);
     switch (parseInt(question_type.value)) {
         case 1:
             question = firstTypeQuestion;
@@ -202,7 +251,7 @@ function getQuestionObject(){
             break;
         
         case 4:
-            question = firstTypeQuestion;
+            question = fourthTypeQuestion;
             break;
         
     }
@@ -253,4 +302,11 @@ function htmlToElement(html) {
     return template.content.firstChild;
 }
 
-renderQuestion();
+
+function bodyLoaded(){
+    let lastSelectedQuestion = localStorage.getItem("lastSelectedQuestion");
+    if (lastSelectedQuestion){
+        question_type.value = lastSelectedQuestion;
+    }
+    renderQuestion();
+}

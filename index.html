@@ -5,9 +5,9 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="css/styles.css">
     </head>
-    <body>
+    <body onload="bodyLoaded();">
         <div class="container">
-            <select class="col-3 mt-3 mb-3" name="choose_question" id="question_variants">
+            <select class="col-3 mt-3 mb-3" name="choose_question" id="question_variants" onchange="renderQuestion();">
                 <option value="1">1 Одиночный выбор</option>
                 <option value="2">2 Множественный выбор</option>
                 <option value="3">3 Соответствие</option>
@@ -25,9 +25,9 @@
                     </select>
                     <button class="btn btn-info ml-5 col-6" onclick="renderJson();" id="convert_button">Преобразовать</button>
                     
-                  </div>
-                  <div class="row justify-content-center" id="question_header"></div>
-                  <div class="container mt-5" id="variative"></div>
+                </div>
+                    <div class="row justify-content-center" id="question_header"></div>
+                    <div class="container mt-5" id="variative"></div>
                 </div>
             </div>
             <div class="card mt-5" id="json_card">
