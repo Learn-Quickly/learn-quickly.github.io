@@ -309,6 +309,5 @@ function bodyLoaded(){
         question_type.value = lastSelectedQuestion;
     }
     renderQuestion();
+    console.log("loaded");
 }
-
-window.onload = bodyLoaded;
