@@ -83,16 +83,20 @@ function processChange(change){
 
         case "changed":
             changeWord(change);
+            // let new_change = compareWords();
+            processChange(compareWords());
             break;
 
         case "added":
             addWord(change);
+            // let new_change = compareWords();
+            processChange(compareWords());
             break;
 
         case "deleted":
             deleteWord(change);
-            let new_change = compareWords();
-            processChange(new_change);
+            // let new_change = compareWords();
+            processChange(compareWords());
             break;
     }
 }
@@ -100,9 +104,9 @@ function processChange(change){
 
 div_input.addEventListener('keyup', e => {
     console.log(e);
-    if (e.key == " "){
-        return null;
-    }
+    // if (e.key == " "){
+    //     return null;
+    // }
     let change = compareWords();
     console.log(change);
     processChange(change);
