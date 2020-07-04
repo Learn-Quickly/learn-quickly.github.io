@@ -74,7 +74,7 @@ class Word {
     }
 }
 
-var words_list = [new Word()];
+var words_list = [];
 
 function processChange(change){
     switch (change.action){
@@ -187,7 +187,7 @@ function compareWords(){
 function getSavedWordsStrings(){
     let words = [];
     if (words_list.length == 0){
-        return [""];
+        return [];
     }
     // console.log(words_list);
     for (let word of words_list) {
@@ -207,7 +207,7 @@ function htmlToElement(html) {
 
 
 function removeOddOut(str){
+    str = str.replace(/(,|\.|!|\?|"|'|\(|\))/g, ' ');
     str = str.replace(/\s{2,}/g, ' ');
-    str = str.replace(/(,|!|\?|"|'|\(|\))/g, '');
     return str;
 }
