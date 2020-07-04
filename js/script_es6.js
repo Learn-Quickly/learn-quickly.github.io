@@ -1,13 +1,13 @@
-var alphabet = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ";
+const alphabet = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ";
 
-var question_type = document.getElementById("question_variants");
+const question_type = document.getElementById("question_variants");
 
-var variative = document.getElementById("variative");
-var question_header = document.getElementById("question_header");
+const variative = document.getElementById("variative");
+const question_header = document.getElementById("question_header");
 
-var session_select = document.getElementById("session_variants");
+const session_select = document.getElementById("session_variants");
 
-var json_place = document.getElementById('json_place');
+const json_place = document.getElementById('json_place');
 
 
 class Question {
@@ -223,9 +223,259 @@ class EnterAnswerQuestion extends Question {
 
 }
 
+class Word {
+
+    constructor(parentQuestion, text=""){
+        this.selected = false;
+        this.text = text;
+        this.parentQuestion = parentQuestion;
+
+        this.div = htmlToElement(`<div class="word-wrap">${this.text}</div>`);
+        this.div.addEventListener("click", e => {
+            let word = this.getWordByDiv(e.path[0]);
+            if (word.selected){
+                word.selected = false;
+            } else {
+                word.selected = true;
+            }
+            word.render();
+        });
+    }
+
+    render(){
+        if (this.selected){
+            this.div.classList.add("word-wrap-selected");
+        } else {
+            this.div.classList.remove("word-wrap-selected");
+        }
+        this.div.innerText = this.text;
+    }
+
+    select(e){
+        let word = this.getWordByDiv(this);
+        if (word.selected){
+            word.selected = false;
+        } else {
+            word.selected = true;
+        }
+        word.render();
+    }
+
+    changeText(text){
+        this.text = text;
+        this.render();
+    }
+
+    getWordByDiv(div){
+        for (let word of this.parentQuestion.words_list) {
+            if (word.div === div) {
+                return word;
+            }
+        }
+        return null;
+    }
+}
+
+class InsertWordsQuestion extends Question {
+    type = 5;
+
+    constructor(){
+        super();
+        this.sessions = [];
+        this.question_div = document.createElement('div');
+        this.question_header = htmlToElement(`<div class="col-7 input-div mt-5" id="div_input" contenteditable=true placeholder="Hello"></div>`);
+        this.question_body = htmlToElement(`<div class="row justify-content-center">
+                            <div class="col-11 mt-3" id="show_words"></div>
+                        </div>`);
+
+        this.question_div.appendChild(this.question_body);
+
+
+        this.words_list = [];
+
+        this.div_input = this.question_header;
+
+        this.div_input.addEventListener('keyup', e => {
+            let change = this.compareWords();
+            console.log(change);
+            this.processChange(change);
+        })
+
+        this.words_show_div = this.question_div.firstChild.firstChild.nextSibling;
+    }
+
+    validateAnswerInput(){
+        let answer_string = this.answer_input.value.trim();
+        this.answer_input.value = answer_string;
+        if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
+            this.answer_input.style.borderColor = "#f44336";
+            return false;
+        } else {
+            this.answer_input.style.borderColor = "#757575";
+            return true;
+        }
+    }
+
+    getAnswer(){
+        return this.answer_input.value.trim();
+    }
+
+    toJson(){
+        let questionObject = {
+            "type": this.type,
+            "sessions": this.sessions,
+            "question_text": this.question_textarea.value.trim(),
+            "answer": this.getAnswer(),
+        }
+
+        if (questionObject.question_text == ""){
+            return "Введите текст вопроса"
+        }
+        
+        if (questionObject.sessions.length == 0){
+            return "Выберите одну или несколько сессий";
+        }
+
+        if (!this.validateAnswerInput()) {
+            return "Ответ должен состоять из одного и только одного слова"
+        }
+
+        return JSON.stringify(questionObject);
+    }
+
+    compareWords(){
+        let words_strings = InsertWordsQuestion.removeOddOut(this.div_input.innerText.trim()).split(" ");
+        let prev_words = this.getSavedWordsStrings();
+        console.log(`previous words: ${prev_words}`);
+        console.log(`words strings: ${words_strings}`);
+
+        let longer;
+
+        if (words_strings.length > prev_words.length){
+            longer = words_strings;
+        } else {
+            longer = prev_words;
+        }
+
+        for (let i in longer) {
+            let prev_word = prev_words[i];
+            let curr_word = words_strings[i];
+            console.log(`previous: ${prev_word}`, `current: ${curr_word}`);
+            if (prev_word == curr_word) {
+                continue;
+            } else {
+                if (words_strings.length == prev_words.length){
+                    return {
+                        "action": "changed",
+                        "index": i,
+                        "prevWord": prev_word,
+                        "currentWord": curr_word
+                    }
+                }
+
+                if (words_strings.length > prev_words.length) {
+                    return {
+                        "action": "added",
+                        "index": i,
+                        "currentWord": curr_word
+                    }
+                }
+
+                if (words_strings.length < prev_words.length) {
+                    return {
+                        "action": "deleted",
+                        "index": i,
+                        "word": prev_word
+                    }
+                }
+            }
+        }
+
+        return {
+            "action": "space"
+        }
+    }
+
+    processChange(change){
+        switch (change.action){
+            case "space":
+                break;
+
+            case "changed":
+                this.changeWord(change);
+                // let new_change = compareWords();
+                this.processChange(this.compareWords());
+                break;
+
+            case "added":
+                this.addWord(change);
+                // let new_change = compareWords();
+                this.processChange(this.compareWords());
+                break;
+
+            case "deleted":
+                this.deleteWord(change);
+                // let new_change = compareWords();
+                this.processChange(this.compareWords());
+                break;
+        }
+    }
+
+    changeWord(change){
+        let word = this.words_list[change.index];
+        word.changeText(change.currentWord);
+        this.renderWords();
+    }
+
+
+    addWord(change){
+        let new_word = new Word(this, change.currentWord);
+        this.words_list.splice(change.index, 0, new_word);
+        this.renderWords();
+    }
+
+
+    deleteWord(change){
+        console.log(this.words_list[change.index]);
+        this.words_list.splice(change.index, 1);
+        this.renderWords();
+    }
+
+    getSavedWordsStrings(){
+        let words = [];
+        if (this.words_list.length == 0){
+            return [];
+        }
+        // console.log(words_list);
+        for (let word of this.words_list) {
+            // console.log(word, words_list)
+            words.push(word.text);
+        }
+        return words;
+    }
+
+
+    renderWords(){
+        this.words_show_div.innerHTML = "";
+        for (let word of this.words_list){
+            this.words_show_div.appendChild(word.div);
+        }
+    }
+
+
+    static removeOddOut(str){
+        str = str.replace(/(,|\.|!|\?|"|'|\(|\))/g, ' ');
+        str = str.replace(/\s{2,}/g, ' ');
+        return str;
+    }   
+
+
+}
+
 
 const firstTypeQuestion = new OneChooseQuestion();
 const fourthTypeQuestion = new EnterAnswerQuestion();
+const fifthTypeQuestion = new InsertWordsQuestion();
 
 function select_session(){
     let question = getQuestionObject();
@@ -252,6 +502,9 @@ function getQuestionObject(){
         
         case 4:
             question = fourthTypeQuestion;
+            break;
+        case 5:
+            question = fifthTypeQuestion;
             break;
         
     }
@@ -280,6 +533,7 @@ function renderJson(){
 
 function renderQuestion(){
     let question = getQuestionObject();
+    console.log(question);
     variative.innerHTML = '';
     variative.appendChild(question.question_div);
 
