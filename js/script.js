@@ -313,7 +313,7 @@ var Word = /*#__PURE__*/function () {
     this.parentQuestion = parentQuestion;
     this.div = htmlToElement("<div class=\"word-wrap\">".concat(this.text, "</div>"));
     this.div.addEventListener("click", function (e) {
-      var word = _this3.getWordByDiv(e.path[0]);
+      var word = _this3.getWordByDiv(e.target);
 
       if (word.selected) {
         word.selected = false;

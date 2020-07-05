@@ -232,7 +232,7 @@ class Word {
 
         this.div = htmlToElement(`<div class="word-wrap">${this.text}</div>`);
         this.div.addEventListener("click", e => {
-            let word = this.getWordByDiv(e.path[0]);
+            let word = this.getWordByDiv(e.target);
             if (word.selected){
                 word.selected = false;
             } else {
