@@ -290,7 +290,7 @@ var EnterAnswerQuestion = /*#__PURE__*/function (_Question2) {
       }
 
       if (!this.validateAnswerInput()) {
-        return "Ответ должен состоять из одного и только одного слова";
+        return "Ответ должен состоять из одного слова";
       }
 
       return JSON.stringify(questionObject);
@@ -300,8 +300,379 @@ var EnterAnswerQuestion = /*#__PURE__*/function (_Question2) {
   return EnterAnswerQuestion;
 }(Question);
 
+var Word = /*#__PURE__*/function () {
+  function Word(parentQuestion) {
+    var _this3 = this;
+
+    var text = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+
+    _classCallCheck(this, Word);
+
+    this.selected = false;
+    this.text = text;
+    this.parentQuestion = parentQuestion;
+    this.div = htmlToElement("<div class=\"word-wrap\">".concat(this.text, "</div>"));
+    this.div.addEventListener("click", function (e) {
+      var word = _this3.getWordByDiv(e.path[0]);
+
+      if (word.selected) {
+        word.selected = false;
+      } else {
+        word.selected = true;
+      }
+
+      word.render();
+    });
+  }
+
+  _createClass(Word, [{
+    key: "render",
+    value: function render() {
+      if (this.selected) {
+        this.div.classList.add("word-wrap-selected");
+      } else {
+        this.div.classList.remove("word-wrap-selected");
+      }
+
+      this.div.innerText = this.text;
+    }
+  }, {
+    key: "select",
+    value: function select(e) {
+      var word = this.getWordByDiv(this);
+
+      if (word.selected) {
+        word.selected = false;
+      } else {
+        word.selected = true;
+      }
+
+      word.render();
+    }
+  }, {
+    key: "changeText",
+    value: function changeText(text) {
+      this.text = text;
+      this.render();
+    }
+  }, {
+    key: "getWordByDiv",
+    value: function getWordByDiv(div) {
+      var _iterator3 = _createForOfIteratorHelper(this.parentQuestion.words_list),
+          _step3;
+
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var word = _step3.value;
+
+          if (word.div === div) {
+            return word;
+          }
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+
+      return null;
+    }
+  }]);
+
+  return Word;
+}();
+
+var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
+  _inherits(InsertWordsQuestion, _Question3);
+
+  var _super3 = _createSuper(InsertWordsQuestion);
+
+  function InsertWordsQuestion() {
+    var _this4;
+
+    _classCallCheck(this, InsertWordsQuestion);
+
+    _this4 = _super3.call(this);
+
+    _defineProperty(_assertThisInitialized(_this4), "type", 5);
+
+    _this4.sessions = [];
+    _this4.question_div = document.createElement('div');
+    _this4.question_header = htmlToElement("<div class=\"col-10 input-div mt-5\" id=\"div_input\" contenteditable=true placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\"></div>");
+    _this4.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
+
+    _this4.question_div.appendChild(_this4.question_body);
+
+    _this4.words_list = [];
+    _this4.div_input = _this4.question_header;
+
+    _this4.div_input.addEventListener('keyup', function (e) {
+      var change = _this4.compareWords(); // console.log(change);
+
+
+      _this4.processChange(change);
+    });
+
+    _this4.words_show_div = _this4.question_div.firstChild.firstChild.nextSibling;
+    return _this4;
+  }
+
+  _createClass(InsertWordsQuestion, [{
+    key: "filterWords",
+    value: function filterWords() {
+      for (var i in this.words_list) {
+        if (this.words_list[i].text == "") {
+          this.words_list.splice(i, 1);
+        }
+      }
+    }
+  }, {
+    key: "getQuestionText",
+    value: function getQuestionText() {
+      var inputText = this.div_input.innerText.trim();
+      this.filterWords();
+      var answerString = "";
+      var firstIndex;
+      var slice;
+      var wordText;
+
+      var _iterator4 = _createForOfIteratorHelper(this.words_list),
+          _step4;
+
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var word = _step4.value;
+          wordText = word.text;
+          firstIndex = inputText.indexOf(wordText);
+          slice = inputText.slice(0, firstIndex);
+          answerString += slice;
+          inputText = inputText.slice(firstIndex + wordText.length);
+
+          if (word.selected) {
+            answerString += "{txt}";
+          } else {
+            answerString += wordText;
+          }
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+
+      slice = inputText.slice(0);
+      answerString += slice;
+      return answerString;
+    }
+  }, {
+    key: "getAnswer",
+    value: function getAnswer() {
+      var answers = [];
+
+      var _iterator5 = _createForOfIteratorHelper(this.words_list),
+          _step5;
+
+      try {
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var word = _step5.value;
+
+          if (word.selected) {
+            answers.push(word.text);
+          }
+        }
+      } catch (err) {
+        _iterator5.e(err);
+      } finally {
+        _iterator5.f();
+      }
+
+      return answers;
+    }
+  }, {
+    key: "toJson",
+    value: function toJson() {
+      var questionObject = {
+        "type": this.type,
+        "sessions": this.sessions,
+        "question_text": this.getQuestionText(),
+        "answer": this.getAnswer()
+      };
+
+      if (questionObject.question_text == "") {
+        return "Введите текст вопроса";
+      }
+
+      if (questionObject.sessions.length == 0) {
+        return "Выберите одну или несколько сессий";
+      }
+
+      if (questionObject.answer.length == 0) {
+        return "Выберите один или несколько слов для вписывания";
+      }
+
+      return JSON.stringify(questionObject);
+    }
+  }, {
+    key: "compareWords",
+    value: function compareWords() {
+      var words_strings = InsertWordsQuestion.removeOddOut(this.div_input.innerText.trim()).split(" ");
+      var prev_words = this.getSavedWordsStrings(); // console.log(`previous words: ${prev_words}`);
+      // console.log(`words strings: ${words_strings}`);
+
+      var longer;
+
+      if (words_strings.length > prev_words.length) {
+        longer = words_strings;
+      } else {
+        longer = prev_words;
+      }
+
+      for (var i in longer) {
+        var prev_word = prev_words[i];
+        var curr_word = words_strings[i]; // console.log(`previous: ${prev_word}`, `current: ${curr_word}`);
+
+        if (prev_word == curr_word) {
+          continue;
+        } else {
+          if (words_strings.length == prev_words.length) {
+            return {
+              "action": "changed",
+              "index": i,
+              "prevWord": prev_word,
+              "currentWord": curr_word
+            };
+          }
+
+          if (words_strings.length > prev_words.length) {
+            return {
+              "action": "added",
+              "index": i,
+              "currentWord": curr_word
+            };
+          }
+
+          if (words_strings.length < prev_words.length) {
+            return {
+              "action": "deleted",
+              "index": i,
+              "word": prev_word
+            };
+          }
+        }
+      }
+
+      return {
+        "action": "space"
+      };
+    }
+  }, {
+    key: "processChange",
+    value: function processChange(change) {
+      switch (change.action) {
+        case "space":
+          break;
+
+        case "changed":
+          this.changeWord(change); // let new_change = compareWords();
+
+          this.processChange(this.compareWords());
+          break;
+
+        case "added":
+          this.addWord(change); // let new_change = compareWords();
+
+          this.processChange(this.compareWords());
+          break;
+
+        case "deleted":
+          this.deleteWord(change); // let new_change = compareWords();
+
+          this.processChange(this.compareWords());
+          break;
+      }
+    }
+  }, {
+    key: "changeWord",
+    value: function changeWord(change) {
+      var word = this.words_list[change.index];
+      word.changeText(change.currentWord);
+      this.renderWords();
+    }
+  }, {
+    key: "addWord",
+    value: function addWord(change) {
+      var new_word = new Word(this, change.currentWord);
+      this.words_list.splice(change.index, 0, new_word);
+      this.renderWords();
+    }
+  }, {
+    key: "deleteWord",
+    value: function deleteWord(change) {
+      console.log(this.words_list[change.index]);
+      this.words_list.splice(change.index, 1);
+      this.renderWords();
+    }
+  }, {
+    key: "getSavedWordsStrings",
+    value: function getSavedWordsStrings() {
+      var words = [];
+
+      if (this.words_list.length == 0) {
+        return [];
+      } // console.log(words_list);
+
+
+      var _iterator6 = _createForOfIteratorHelper(this.words_list),
+          _step6;
+
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var word = _step6.value;
+          // console.log(word, words_list)
+          words.push(word.text);
+        }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
+      }
+
+      return words;
+    }
+  }, {
+    key: "renderWords",
+    value: function renderWords() {
+      this.words_show_div.innerHTML = "";
+
+      var _iterator7 = _createForOfIteratorHelper(this.words_list),
+          _step7;
+
+      try {
+        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+          var word = _step7.value;
+          this.words_show_div.appendChild(word.div);
+        }
+      } catch (err) {
+        _iterator7.e(err);
+      } finally {
+        _iterator7.f();
+      }
+    }
+  }], [{
+    key: "removeOddOut",
+    value: function removeOddOut(str) {
+      str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:)/g, ' ');
+      str = str.replace(/\s{2,}/g, ' ');
+      return str;
+    }
+  }]);
+
+  return InsertWordsQuestion;
+}(Question);
+
 var firstTypeQuestion = new OneChooseQuestion();
 var fourthTypeQuestion = new EnterAnswerQuestion();
+var fifthTypeQuestion = new InsertWordsQuestion();
 
 function select_session() {
   var question = getQuestionObject();
@@ -328,6 +699,10 @@ function getQuestionObject() {
     case 4:
       question = fourthTypeQuestion;
       break;
+
+    case 5:
+      question = fifthTypeQuestion;
+      break;
   }
 
   return question;
@@ -336,21 +711,21 @@ function getQuestionObject() {
 function getSessions() {
   var sessions = [];
 
-  var _iterator3 = _createForOfIteratorHelper(session_select.options),
-      _step3;
+  var _iterator8 = _createForOfIteratorHelper(session_select.options),
+      _step8;
 
   try {
-    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-      var option = _step3.value;
+    for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+      var option = _step8.value;
 
       if (option.selected) {
         sessions.push(parseInt(option.value));
       }
     }
   } catch (err) {
-    _iterator3.e(err);
+    _iterator8.e(err);
   } finally {
-    _iterator3.f();
+    _iterator8.f();
   }
 
   return sessions;
@@ -366,6 +741,7 @@ function renderJson() {
 
 function renderQuestion() {
   var question = getQuestionObject();
+  console.log(question);
   variative.innerHTML = '';
   variative.appendChild(question.question_div);
   question_header.innerHTML = '';
@@ -394,6 +770,7 @@ function bodyLoaded() {
   if (lastSelectedQuestion) {
     question_type.value = lastSelectedQuestion;
   }
+
   renderQuestion();
   console.log("loaded");
 }

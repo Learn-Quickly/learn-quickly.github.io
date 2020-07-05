@@ -91,10 +91,15 @@ textarea:focus {
 }
 
 .input-div {
-            background-color: #efefef;
-            border: 1px black solid;
-            border-radius: 10px;
-            font-size: 30px;
+    background-color: #efefef;
+    /*border: 1px black solid;*/
+    border: none;
+    border-radius: 10px;
+    font-size: 1.7em;
+}
+
+.input-div:focus {
+    outline: none;
 }
 
 .placeholder {

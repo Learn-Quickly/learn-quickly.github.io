@@ -215,7 +215,7 @@ class EnterAnswerQuestion extends Question {
         }
 
         if (!this.validateAnswerInput()) {
-            return "Ответ должен состоять из одного и только одного слова"
+            return "Ответ должен состоять из одного слова"
         }
 
         return JSON.stringify(questionObject);
@@ -283,7 +283,7 @@ class InsertWordsQuestion extends Question {
         super();
         this.sessions = [];
         this.question_div = document.createElement('div');
-        this.question_header = htmlToElement(`<div class="col-7 input-div mt-5" id="div_input" contenteditable=true placeholder="Hello"></div>`);
+        this.question_header = htmlToElement(`<div class="col-10 input-div mt-5" id="div_input" contenteditable=true placeholder="Введите текст вопроса"></div>`);
         this.question_body = htmlToElement(`<div class="row justify-content-center">
                             <div class="col-11 mt-3" id="show_words"></div>
                         </div>`);
@@ -297,47 +297,80 @@ class InsertWordsQuestion extends Question {
 
         this.div_input.addEventListener('keyup', e => {
             let change = this.compareWords();
-            console.log(change);
+            // console.log(change);
             this.processChange(change);
         })
 
         this.words_show_div = this.question_div.firstChild.firstChild.nextSibling;
     }
 
-    validateAnswerInput(){
-        let answer_string = this.answer_input.value.trim();
-        this.answer_input.value = answer_string;
-        if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
-            this.answer_input.style.borderColor = "#f44336";
-            return false;
-        } else {
-            this.answer_input.style.borderColor = "#757575";
-            return true;
+    filterWords(){
+        for (let i in this.words_list){
+            if (this.words_list[i].text == ""){
+                this.words_list.splice(i, 1);
+            }
         }
     }
 
+    getQuestionText(){
+        let inputText = this.div_input.innerText.trim();
+        this.filterWords();
+
+        let answerString = "";
+
+        let firstIndex;
+        let slice;
+        let wordText;
+
+        for (let word of this.words_list){
+            wordText = word.text;
+
+            firstIndex = inputText.indexOf(wordText);
+            slice = inputText.slice(0, firstIndex);
+            answerString += slice;
+            inputText = inputText.slice(firstIndex + wordText.length);
+
+            if (word.selected){
+                answerString += "{txt}";
+            } else {
+                answerString += wordText;
+            }
+
+        }
+        slice = inputText.slice(0);
+        answerString += slice;
+
+        return answerString;
+    }
+
     getAnswer(){
-        return this.answer_input.value.trim();
+        let answers = [];
+        for (let word of this.words_list){
+            if (word.selected){
+                answers.push(word.text);
+            }
+        }
+        return answers;
     }
 
     toJson(){
         let questionObject = {
             "type": this.type,
             "sessions": this.sessions,
-            "question_text": this.question_textarea.value.trim(),
+            "question_text": this.getQuestionText(),
             "answer": this.getAnswer(),
         }
 
         if (questionObject.question_text == ""){
-            return "Введите текст вопроса"
+            return "Введите текст вопроса";
         }
         
         if (questionObject.sessions.length == 0){
             return "Выберите одну или несколько сессий";
         }
 
-        if (!this.validateAnswerInput()) {
-            return "Ответ должен состоять из одного и только одного слова"
+        if (questionObject.answer.length == 0){
+            return "Выберите один или несколько слов для вписывания";
         }
 
         return JSON.stringify(questionObject);
@@ -346,8 +379,8 @@ class InsertWordsQuestion extends Question {
     compareWords(){
         let words_strings = InsertWordsQuestion.removeOddOut(this.div_input.innerText.trim()).split(" ");
         let prev_words = this.getSavedWordsStrings();
-        console.log(`previous words: ${prev_words}`);
-        console.log(`words strings: ${words_strings}`);
+        // console.log(`previous words: ${prev_words}`);
+        // console.log(`words strings: ${words_strings}`);
 
         let longer;
 
@@ -360,7 +393,7 @@ class InsertWordsQuestion extends Question {
         for (let i in longer) {
             let prev_word = prev_words[i];
             let curr_word = words_strings[i];
-            console.log(`previous: ${prev_word}`, `current: ${curr_word}`);
+            // console.log(`previous: ${prev_word}`, `current: ${curr_word}`);
             if (prev_word == curr_word) {
                 continue;
             } else {
@@ -464,11 +497,10 @@ class InsertWordsQuestion extends Question {
 
 
     static removeOddOut(str){
-        str = str.replace(/(,|\.|!|\?|"|'|\(|\))/g, ' ');
+        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:)/g, ' ');
         str = str.replace(/\s{2,}/g, ' ');
         return str;
     }   
-
 
 }
 
