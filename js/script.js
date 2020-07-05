@@ -36,7 +36,7 @@ var alphabet = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮ
 var question_type = document.getElementById("question_variants");
 var variative = document.getElementById("variative");
 var question_header = document.getElementById("question_header");
-var session_select = document.getElementById("session_variants");
+var session_select = document.querySelectorAll(".session-checkbox");
 var json_place = document.getElementById('json_place');
 
 var Question = function Question() {
@@ -711,15 +711,15 @@ function getQuestionObject() {
 function getSessions() {
   var sessions = [];
 
-  var _iterator8 = _createForOfIteratorHelper(session_select.options),
+  var _iterator8 = _createForOfIteratorHelper(session_select),
       _step8;
 
   try {
     for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-      var option = _step8.value;
+      var checkbox = _step8.value;
 
-      if (option.selected) {
-        sessions.push(parseInt(option.value));
+      if (checkbox.checked) {
+        sessions.push(checkbox.name);
       }
     }
   } catch (err) {

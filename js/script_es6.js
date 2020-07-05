@@ -5,7 +5,7 @@ const question_type = document.getElementById("question_variants");
 const variative = document.getElementById("variative");
 const question_header = document.getElementById("question_header");
 
-const session_select = document.getElementById("session_variants");
+const session_select = document.querySelectorAll(".session-checkbox");
 
 const json_place = document.getElementById('json_place');
 
@@ -547,9 +547,9 @@ function getQuestionObject(){
 function getSessions(){
     let sessions = [];
 
-    for (let option of session_select.options) {
-        if (option.selected) {
-            sessions.push(parseInt(option.value));
+    for (let checkbox of session_select) {
+        if (checkbox.checked) {
+            sessions.push(checkbox.name);
         }
     }
     return sessions;
