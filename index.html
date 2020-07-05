@@ -17,13 +17,23 @@
             <div class="card" id="question_card">
                 <div class="card-body">
                   <div class="row">
-                    <select class="col-5 ml-3" name="session_select" onclick="select_session();" id="session_variants" multiple="5">
+                    <!-- <select class="col-5 ml-3" name="session_select" onclick="select_session();" id="session_variants" multiple="5">
                                 <option value="1">Сессия 1</option>
                                 <option value="2">Сессия 2</option>
                                 <option value="3">Сессия 3</option>
                                 <option value="4">Сессия 4</option>
                                 <option value="5">Сессия 5</option>
-                    </select>
+                    </select> -->
+                    <div class="container col-5 ml-3">
+                        <h1>Сессии:</h1>
+                        <div onclick="select_session();" id="session_variants">
+                            <label class="session-label"><input type="checkbox" checked class="d-none"><span class="session-span">1</span></label>
+                            <label class="session-label"><input type="checkbox" checked class="d-none"><span class="session-span">2</span></label>
+                            <label class="session-label"><input type="checkbox" checked class="d-none"><span class="session-span">3</span></label>
+                            <label class="session-label"><input type="checkbox" checked class="d-none"><span class="session-span">4</span></label>
+                            <label class="session-label"><input type="checkbox" checked class="d-none"><span class="session-span">5</span></label>
+                        </div>
+                    </div>
                     <button class="btn btn-info ml-5 col-6" onclick="renderJson();" id="convert_button">Преобразовать</button>
                     
                 </div>

@@ -1,13 +1,9 @@
-/*body {
-	background-color: #5c5c5c;
-}
-
 .card {
-	background-color: #5b5a5a;
-	border: 1px solid rgba(255, 251, 251, 0.13);
-	color: #fff;
+-webkit-box-shadow: 10px 10px 66px -29px rgba(0,0,0,0.53);
+-moz-box-shadow: 10px 10px 66px -29px rgba(0,0,0,0.53);
+box-shadow: 10px 10px 66px -29px rgba(0,0,0,0.53);
 }
-*/
+/**/
 textarea {
     border: none;
     resize: none;
@@ -35,7 +31,6 @@ textarea:focus {
     overflow-y: hidden;
     padding-left: 0;
     font-size: 20px;
-    border-radius: 10px;
     padding-bottom: 25px;
 }
 
@@ -57,7 +52,7 @@ textarea:focus {
 }
 
 #one_variant_input {
-	font-size: 40px;
+	font-size: 30px;
 	border: 1px solid #757575;
 	border-right: none;
 	border-left: none;
@@ -87,7 +82,7 @@ textarea:focus {
 }
 
 #convert_button {
-	font-size: 2em;
+	font-size: 1.5em;
 }
 
 .input-div {
@@ -104,10 +99,6 @@ textarea:focus {
 
 .placeholder {
     color: #5c5c5c;
-}
-
-.display-none {
-    display: none;
 }
 
 #show_words {
@@ -136,4 +127,19 @@ textarea:focus {
 
 .word-wrap-selected {
     background-color: #FF7676;
+}
+
+input:checked + span {
+    background-color: #00C2FF;
+}
+
+.session-label {
+    margin: 10px;
+    font-size: 30px;
+}
+
+.session-span {
+    padding: 15px;
+    border-radius: 10%;
+    transition-duration: 0.2s;
 }
