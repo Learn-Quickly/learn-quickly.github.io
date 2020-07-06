@@ -6,7 +6,6 @@
         <link rel="stylesheet" href="css/styles.css">
     </head>
     <body onload="bodyLoaded();">
-    <!-- <body> -->
         <div class="container">
             <select class="col-3 mt-3 mb-3" name="choose_question" id="question_variants" onchange="renderQuestion();">
                 <option value="1">1 Одиночный выбор</option>
@@ -18,13 +17,16 @@
             <div class="card" id="question_card">
                 <div class="card-body">
                   <div class="row">
-                    <select class="col-5 ml-3" name="session_select" onclick="select_session();" id="session_variants" multiple="5">
-                                <option value="1">Сессия 1</option>
-                                <option value="2">Сессия 2</option>
-                                <option value="3">Сессия 3</option>
-                                <option value="4">Сессия 4</option>
-                                <option value="5">Сессия 5</option>
-                    </select>
+                    <div class="container col-5 ml-3">
+                        <h1>Сессии:</h1>
+                        <div id="session_variants">
+                            <label class="session-label mt-3"><input type="checkbox" checked class="session-checkbox d-none" name="1"><span>1</span></label>
+                            <label class="session-label mt-3"><input type="checkbox" checked class="session-checkbox d-none" name="2"><span>2</span></label>
+                            <label class="session-label mt-3"><input type="checkbox" checked class="session-checkbox d-none" name="3"><span>3</span></label>
+                            <label class="session-label mt-3"><input type="checkbox" checked class="session-checkbox d-none" name="4"><span>4</span></label>
+                            <label class="session-label mt-3"><input type="checkbox" checked class="session-checkbox d-none" name="5"><span>5</span></label>
+                        </div>
+                    </div>
                     <button class="btn btn-info ml-5 col-6" onclick="renderJson();" id="convert_button">Преобразовать</button>
                     
                 </div>

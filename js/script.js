@@ -8,10 +8,6 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
@@ -30,6 +26,10 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
 function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var alphabet = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ";
@@ -39,17 +39,26 @@ var question_header = document.getElementById("question_header");
 var session_select = document.querySelectorAll(".session-checkbox");
 var json_place = document.getElementById('json_place');
 
-var Question = function Question() {
-  _classCallCheck(this, Question);
+var Question = /*#__PURE__*/function () {
+  function Question() {
+    _classCallCheck(this, Question);
 
-  _defineProperty(this, "type", void 0);
+    _defineProperty(this, "type", void 0);
 
-  _defineProperty(this, "sessions", void 0);
+    _defineProperty(this, "question_div", void 0);
 
-  _defineProperty(this, "question_div", void 0);
+    _defineProperty(this, "question_header", void 0);
+  }
 
-  _defineProperty(this, "question_header", void 0);
-};
+  _createClass(Question, [{
+    key: "sessions",
+    get: function get() {
+      return getSessions();
+    }
+  }]);
+
+  return Question;
+}();
 
 var OneChooseQuestion = /*#__PURE__*/function (_Question) {
   _inherits(OneChooseQuestion, _Question);
@@ -65,7 +74,6 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
 
     _defineProperty(_assertThisInitialized(_this), "type", 1);
 
-    _this.sessions = [];
     _this.question_div = document.createElement('div');
     _this.question_header = htmlToElement("<textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>");
     _this.question_body = htmlToElement("<div class=\"row\">\n                        <h4 class=\"col-3\">\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B \u043E\u0442\u0432\u0435\u0442\u043E\u0432</h4>\n                        <div class=\"col-4\"><button class=\"btn btn-success\" onclick=\"firstTypeQuestion.add_variant();\" id=\"add_one_choose_variant\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\u0430\u0440\u0438\u0430\u043D\u0442</button></div>\n                    </div>");
@@ -240,7 +248,6 @@ var EnterAnswerQuestion = /*#__PURE__*/function (_Question2) {
 
     _defineProperty(_assertThisInitialized(_this2), "type", 4);
 
-    _this2.sessions = [];
     _this2.question_div = document.createElement('div');
     _this2.question_header = htmlToElement("<div class=\"col-11\">\n                            <textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>\n                        </div>");
     _this2.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <input class=\"col-7\" id=\"one_variant_input\" type=\"text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\" onchange=\"fourthTypeQuestion.validateAnswerInput();\"/>\n                        </div>");
@@ -396,7 +403,6 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
 
     _defineProperty(_assertThisInitialized(_this4), "type", 5);
 
-    _this4.sessions = [];
     _this4.question_div = document.createElement('div');
     _this4.question_header = htmlToElement("<div class=\"col-10 input-div mt-5\" id=\"div_input\" contenteditable=true placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\"></div>");
     _this4.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
@@ -507,7 +513,7 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       }
 
       if (questionObject.answer.length == 0) {
-        return "Выберите один или несколько слов для вписывания";
+        return "Выберите одно или несколько слов для вписывания";
       }
 
       return JSON.stringify(questionObject);
@@ -608,7 +614,7 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
   }, {
     key: "deleteWord",
     value: function deleteWord(change) {
-      console.log(this.words_list[change.index]);
+      // console.log(this.words_list[change.index]);
       this.words_list.splice(change.index, 1);
       this.renderWords();
     }
@@ -674,11 +680,6 @@ var firstTypeQuestion = new OneChooseQuestion();
 var fourthTypeQuestion = new EnterAnswerQuestion();
 var fifthTypeQuestion = new InsertWordsQuestion();
 
-function select_session() {
-  var question = getQuestionObject();
-  question.sessions = getSessions();
-}
-
 function getQuestionObject() {
   var question;
   localStorage.setItem("lastSelectedQuestion", question_type.value);
@@ -719,7 +720,7 @@ function getSessions() {
       var checkbox = _step8.value;
 
       if (checkbox.checked) {
-        sessions.push(checkbox.name);
+        sessions.push(parseInt(checkbox.name));
       }
     }
   } catch (err) {
@@ -740,8 +741,8 @@ function renderJson() {
 }
 
 function renderQuestion() {
-  var question = getQuestionObject();
-  console.log(question);
+  var question = getQuestionObject(); // console.log(question);
+
   variative.innerHTML = '';
   variative.appendChild(question.question_div);
   question_header.innerHTML = '';
@@ -758,8 +759,7 @@ function uuidv4() {
 
 function htmlToElement(html) {
   var template = document.createElement('template');
-  html = html.trim(); // Never return a text node of whitespace as the result
-
+  html = html.trim();
   template.innerHTML = html;
   return template.content.firstChild;
 }
@@ -771,6 +771,5 @@ function bodyLoaded() {
     question_type.value = lastSelectedQuestion;
   }
 
-  renderQuestion();
-  console.log("loaded");
+  renderQuestion(); // console.log("loaded");
 }

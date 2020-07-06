@@ -12,9 +12,12 @@ const json_place = document.getElementById('json_place');
 
 class Question {
     type;
-    sessions;
     question_div;
     question_header;
+
+    get sessions() {
+        return getSessions();
+    }
 }
 
 
@@ -23,7 +26,6 @@ class OneChooseQuestion extends Question {
 
     constructor(){
         super();
-        this.sessions = [];
         this.question_div = document.createElement('div');
         this.question_header = htmlToElement(`<textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>`);
         this.question_body = htmlToElement(`<div class="row">
@@ -167,7 +169,6 @@ class EnterAnswerQuestion extends Question {
 
     constructor(){
         super();
-        this.sessions = [];
         this.question_div = document.createElement('div');
         this.question_header = htmlToElement(`<div class="col-11">
                             <textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>
@@ -281,7 +282,6 @@ class InsertWordsQuestion extends Question {
 
     constructor(){
         super();
-        this.sessions = [];
         this.question_div = document.createElement('div');
         this.question_header = htmlToElement(`<div class="col-10 input-div mt-5" id="div_input" contenteditable=true placeholder="Введите текст вопроса"></div>`);
         this.question_body = htmlToElement(`<div class="row justify-content-center">
@@ -370,7 +370,7 @@ class InsertWordsQuestion extends Question {
         }
 
         if (questionObject.answer.length == 0){
-            return "Выберите один или несколько слов для вписывания";
+            return "Выберите одно или несколько слов для вписывания";
         }
 
         return JSON.stringify(questionObject);
@@ -469,7 +469,7 @@ class InsertWordsQuestion extends Question {
 
 
     deleteWord(change){
-        console.log(this.words_list[change.index]);
+        // console.log(this.words_list[change.index]);
         this.words_list.splice(change.index, 1);
         this.renderWords();
     }
@@ -509,12 +509,6 @@ const firstTypeQuestion = new OneChooseQuestion();
 const fourthTypeQuestion = new EnterAnswerQuestion();
 const fifthTypeQuestion = new InsertWordsQuestion();
 
-function select_session(){
-    let question = getQuestionObject();
-
-    question.sessions = getSessions();
-
-}
 
 function getQuestionObject(){
     let question;
@@ -549,7 +543,7 @@ function getSessions(){
 
     for (let checkbox of session_select) {
         if (checkbox.checked) {
-            sessions.push(checkbox.name);
+            sessions.push(parseInt(checkbox.name));
         }
     }
     return sessions;
@@ -565,7 +559,7 @@ function renderJson(){
 
 function renderQuestion(){
     let question = getQuestionObject();
-    console.log(question);
+    // console.log(question);
     variative.innerHTML = '';
     variative.appendChild(question.question_div);
 
@@ -583,7 +577,7 @@ function uuidv4() {
 
 function htmlToElement(html) {
     var template = document.createElement('template');
-    html = html.trim(); // Never return a text node of whitespace as the result
+    html = html.trim();
     template.innerHTML = html;
     return template.content.firstChild;
 }
@@ -595,5 +589,5 @@ function bodyLoaded(){
         question_type.value = lastSelectedQuestion;
     }
     renderQuestion();
-    console.log("loaded");
+    // console.log("loaded");
 }
