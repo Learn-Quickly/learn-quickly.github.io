@@ -118,9 +118,13 @@ textarea:focus {
     border: 1px solid rgba(255, 255, 255, 0);
 }
 
-.word-wrap:hover {
+.word-wrap:hover, .session-label>span:hover {
     border: 1px solid #00C2FF;
     cursor: pointer;
+}
+
+.session-label>span {
+    border: 1px solid rgba(255, 255, 255, 0);
 }
 
 .word-wrap-selected {
@@ -131,6 +135,15 @@ input:checked + span {
     background-color: #00C2FF;
 }
 
+input:checked:hover + span{
+    background-color: #7ADFFF;
+    border-color: #7ADFFF;
+}
+
+input:hover {
+    border: 1px solid #00C2FF;
+}
+
 .session-label {
     margin: 10px;
     font-size: 30px;
@@ -139,4 +152,8 @@ input:checked + span {
 .session-label span {
     padding: 15px;
     border-radius: 10%;
+}
+
+.session-label:hover {
+    cursor: pointer;
 }
