@@ -240,6 +240,7 @@ class Word {
                 word.selected = true;
             }
             word.render();
+            this.parentQuestion.renderPreview();
         });
     }
 
@@ -288,7 +289,15 @@ class InsertWordsQuestion extends Question {
                             <div class="col-11 mt-3" id="show_words"></div>
                         </div>`);
 
+        this.question_preview_part = htmlToElement(`<div class="container"><div class="row mt-3 justify-content-center"><h2>Предпросмотр:</h1></div>
+                        <div class="row mt-3 justify-content-center">
+                            <div class="col-11" id="question_example"></div>
+                        </div></div>`);
+        this.question_preview = this.question_preview_part.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
+
+
         this.question_div.appendChild(this.question_body);
+        this.question_div.appendChild(this.question_preview_part);
 
 
         this.words_list = [];
@@ -299,6 +308,7 @@ class InsertWordsQuestion extends Question {
             let change = this.compareWords();
             // console.log(change);
             this.processChange(change);
+            this.renderPreview();
         })
 
         this.words_show_div = this.question_div.firstChild.firstChild.nextSibling;
@@ -496,8 +506,43 @@ class InsertWordsQuestion extends Question {
     }
 
 
+    renderPreview(){
+        let json = this.toJson();
+
+        let questionObject;
+
+        try {
+            questionObject = JSON.parse(json);
+        } catch (SyntaxError) {
+            this.question_preview.innerHTML = json;
+            return false;
+        }
+
+        let answerString = "";
+
+        let firstIndex;
+        let slice;
+        let wordText;
+
+        let findText = "{txt}"
+        for (let word of questionObject.answer){
+
+            firstIndex = questionObject.question_text.indexOf(findText);
+            slice = questionObject.question_text.slice(0, firstIndex);
+            answerString += slice;
+            answerString += `<div class="missed-word">${word}</div>`;
+            questionObject.question_text = questionObject.question_text.slice(firstIndex + findText.length);
+
+        }
+        slice = questionObject.question_text.slice(0);
+        answerString += slice;
+
+        this.question_preview.innerHTML = answerString;
+    }
+
+
     static removeOddOut(str){
-        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:)/g, ' ');
+        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-)/g, ' ');
         str = str.replace(/\s{2,}/g, ' ');
         return str;
     }   

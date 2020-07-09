@@ -329,6 +329,8 @@ var Word = /*#__PURE__*/function () {
       }
 
       word.render();
+
+      _this3.parentQuestion.renderPreview();
     });
   }
 
@@ -406,8 +408,12 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
     _this4.question_div = document.createElement('div');
     _this4.question_header = htmlToElement("<div class=\"col-10 input-div mt-5\" id=\"div_input\" contenteditable=true placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\"></div>");
     _this4.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
+    _this4.question_preview_part = htmlToElement("<div class=\"container\"><div class=\"row mt-3 justify-content-center\"><h2>\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440:</h1></div>\n                        <div class=\"row mt-3 justify-content-center\">\n                            <div class=\"col-11\" id=\"question_example\"></div>\n                        </div></div>");
+    _this4.question_preview = _this4.question_preview_part.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
 
     _this4.question_div.appendChild(_this4.question_body);
+
+    _this4.question_div.appendChild(_this4.question_preview_part);
 
     _this4.words_list = [];
     _this4.div_input = _this4.question_header;
@@ -417,6 +423,8 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
 
 
       _this4.processChange(change);
+
+      _this4.renderPreview();
     });
 
     _this4.words_show_div = _this4.question_div.firstChild.firstChild.nextSibling;
@@ -664,10 +672,51 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
         _iterator7.f();
       }
     }
+  }, {
+    key: "renderPreview",
+    value: function renderPreview() {
+      var json = this.toJson();
+      var questionObject;
+
+      try {
+        questionObject = JSON.parse(json);
+      } catch (SyntaxError) {
+        this.question_preview.innerHTML = json;
+        return false;
+      }
+
+      var answerString = "";
+      var firstIndex;
+      var slice;
+      var wordText;
+      var findText = "{txt}";
+
+      var _iterator8 = _createForOfIteratorHelper(questionObject.answer),
+          _step8;
+
+      try {
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var word = _step8.value;
+          firstIndex = questionObject.question_text.indexOf(findText);
+          slice = questionObject.question_text.slice(0, firstIndex);
+          answerString += slice;
+          answerString += "<div class=\"missed-word\">".concat(word, "</div>");
+          questionObject.question_text = questionObject.question_text.slice(firstIndex + findText.length);
+        }
+      } catch (err) {
+        _iterator8.e(err);
+      } finally {
+        _iterator8.f();
+      }
+
+      slice = questionObject.question_text.slice(0);
+      answerString += slice;
+      this.question_preview.innerHTML = answerString;
+    }
   }], [{
     key: "removeOddOut",
     value: function removeOddOut(str) {
-      str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:)/g, ' ');
+      str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-)/g, ' ');
       str = str.replace(/\s{2,}/g, ' ');
       return str;
     }
@@ -712,21 +761,21 @@ function getQuestionObject() {
 function getSessions() {
   var sessions = [];
 
-  var _iterator8 = _createForOfIteratorHelper(session_select),
-      _step8;
+  var _iterator9 = _createForOfIteratorHelper(session_select),
+      _step9;
 
   try {
-    for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-      var checkbox = _step8.value;
+    for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+      var checkbox = _step9.value;
 
       if (checkbox.checked) {
         sessions.push(parseInt(checkbox.name));
       }
     }
   } catch (err) {
-    _iterator8.e(err);
+    _iterator9.e(err);
   } finally {
-    _iterator8.f();
+    _iterator9.f();
   }
 
   return sessions;

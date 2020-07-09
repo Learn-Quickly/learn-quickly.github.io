@@ -157,3 +157,16 @@ input:hover {
 .session-label:hover {
     cursor: pointer;
 }
+
+#question_example {
+    background-color: #efefef;
+    min-height: 100px;
+    border-radius: 15px;
+    font-size: 20px;
+}
+
+.missed-word {
+    display: inline;
+    border-bottom: 2px solid #FF7676;
+    color: #e21b1b;
+}
