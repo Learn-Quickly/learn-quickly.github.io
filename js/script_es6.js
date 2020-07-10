@@ -537,12 +537,12 @@ class InsertWordsQuestion extends Question {
         slice = questionObject.question_text.slice(0);
         answerString += slice;
 
-        this.question_preview.innerHTML = answerString;
+        this.question_preview.innerHTML = answerString.replace(/(\r\n|\n|\r)/g, "<br/>");
     }
 
 
     static removeOddOut(str){
-        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-)/g, ' ');
+        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-|[\r\n]+)/g, ' ');
         str = str.replace(/\s{2,}/g, ' ');
         return str;
     }   
