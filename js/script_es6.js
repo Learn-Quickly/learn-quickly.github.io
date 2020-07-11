@@ -226,6 +226,11 @@ class EnterAnswerQuestion extends Question {
 
 
 class Letter {
+
+    get selectOptions(){
+        return ["nothing", "missed"];
+    }
+
     constructor(parentWord, letter=""){
         this.parentWord = parentWord;
         this._letter = letter;
@@ -236,10 +241,39 @@ class Letter {
                 "letter": this
             });
         });
+        this.selectedAs = {"as": "nothing"};
     }
 
     render(){
-        this.div.innerText = this.text;
+        switch (this.selectedAs.as){
+            case "nothing":
+                this.div.style.backgroundColor = "rgba(0, 0, 0, 0)";
+                break;
+            case "missed":
+                this.div.style.backgroundColor = "lightblue";
+                this.parentWord.selectWord("nothing");
+                this.parentWord.render();
+                break;
+        }
+        this.div.innerText = this.letter;
+    }
+
+    selectLetter(as){
+        switch (as) {
+            case "nothing":
+                this.selectedAs.as = as;
+                break;
+            case "missed":
+                this.selectedAs.as = as;
+                break;
+            default:
+                throw (new Error("incorrect select option"));
+        }
+        if (this.selectOptions.indexOf(as) != -1){
+            this.selectedAs.as = as;
+        } else {
+            throw (new Error("incorrect select option"));
+        }
     }
 
     get letter(){
@@ -249,6 +283,7 @@ class Letter {
 
 
 class Word {
+    selectOptions = ["nothing", "missed", "mixed"];
 
     constructor(parentQuestion, text=""){
         this.selected = false;
@@ -270,17 +305,24 @@ class Word {
         //     word.render();
         //     this.parentQuestion.renderPreview();
         // });
-
+        this.selectedAs = {"as": "nothing"};
     }
 
-    compareLetters(){
-
+    selectWord(as){
+        if (this.selectOptions.indexOf(as) != -1){
+            this.selectedAs.as = as;
+        } else {
+            throw (new Error("incorrect select option"));
+        }
     }
 
     buildLetters(){
-        this.letters = [];
+        let new_letters = [];
         for (let char of this.text){
-            this.letters.push(new Letter(this, char));
+            new_letters.push(new Letter(this, char));
+        }
+        if (new_letters.map(letter => letter.letter).join("") != this.letters.map(letter => letter.letter).join("")){
+            this.letters = new_letters;
         }
     }
 
@@ -293,10 +335,22 @@ class Word {
     }
 
     render(){
-        if (this.selected){
-            this.div.classList.add("word-wrap-selected");
-        } else {
-            this.div.classList.remove("word-wrap-selected");
+        // if (this.selected){
+        //     this.div.classList.add("word-wrap-selected");
+        // } else {
+        //     this.div.classList.remove("word-wrap-selected");
+        // }
+        console.log(this.selectedAs);
+        switch (this.selectedAs.as){
+            case "nothing":
+                this.div.style.backgroundColor = "rgba(0, 0, 0, 0)";
+                break;
+            case "missed":
+                this.div.style.backgroundColor = "#FF7676";
+                break;
+            case "mixed":
+                this.div.style.backgroundColor = "lightgreen";
+                break;
         }
 
         this.buildDiv();
@@ -389,8 +443,23 @@ class SelectorStrategy {
 
 
 class SelectMissWord extends SelectorStrategy {
+    unselectLetters(letters){
+        for (let letter of letters){
+            letter.selectLetter("nothing");
+            letter.render();
+        }
+    }
+
     select(callback) {
         console.log("in select miss word", callback);
+        let word = callback.letter.parentWord;
+        if (word.selectedAs.as != "missed") {
+            word.selectWord("missed");    
+        } else {
+            word.selectWord("nothing");
+        }
+        this.unselectLetters(word.letters);
+        word.render();
     }
 }
 
@@ -398,14 +467,36 @@ class SelectMissWord extends SelectorStrategy {
 class SelectMissLetter extends SelectorStrategy {
     select(callback){
         console.log("in select miss letter", callback);
+        let letter = callback.letter;
+        if (letter.selectedAs.as != "missed") {
+            letter.selectLetter("missed");    
+        } else {
+            letter.selectLetter("nothing");
+        }
+        letter.render();
 
     }
 }
 
 
 class SelectMixWord extends SelectorStrategy {
+    unselectLetters(letters){
+        for (let letter of letters){
+            letter.selectLetter("nothing");
+            letter.render();
+        }
+    }
+
     select(callback) {
         console.log("in select mix word", callback);
+        let word = callback.letter.parentWord;
+        if (word.selectedAs.as != "mixed") {
+            word.selectWord("mixed");    
+        } else {
+            word.selectWord("nothing");
+        }
+        this.unselectLetters(word.letters);
+        word.render();
     }
 }
 
@@ -685,7 +776,7 @@ class InsertWordsQuestion extends Question {
 
 
     static removeOddOut(str){
-        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-|[\r\n]+)/g, ' ');
+        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-|[\r\n]+|&)/g, ' ');
         str = str.replace(/\s{2,}/g, ' ');
         return str;
     }   
