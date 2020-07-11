@@ -240,6 +240,7 @@ class Letter {
                 "event": e,
                 "letter": this
             });
+            this.parentWord.parentQuestion.renderPreview();
         });
         this.selectedAs = {"as": "nothing"};
     }
@@ -351,7 +352,7 @@ class Word {
         // } else {
         //     this.div.classList.remove("word-wrap-selected");
         // }
-        console.log(this.selectedAs);
+        // console.log(this.selectedAs);
         switch (this.selectedAs.as){
             case "nothing":
                 this.div.style.backgroundColor = "rgba(0, 0, 0, 0)";
@@ -476,7 +477,7 @@ class SelectMissWord extends SelectorStrategy {
     }
 
     select(callback) {
-        console.log("in select miss word", callback);
+        // console.log("in select miss word", callback);
         let word = callback.letter.parentWord;
         if (word.selectedAs.as != "missed") {
             word.selectWord("missed");    
@@ -491,7 +492,7 @@ class SelectMissWord extends SelectorStrategy {
 
 class SelectMissLetter extends SelectorStrategy {
     select(callback){
-        console.log("in select miss letter", callback);
+        // console.log("in select miss letter", callback);
         let letter = callback.letter;
         if (letter.selectedAs.as != "missed") {
             letter.selectLetter("missed");    
@@ -513,7 +514,7 @@ class SelectMixWord extends SelectorStrategy {
     }
 
     select(callback) {
-        console.log("in select mix word", callback);
+        // console.log("in select mix word", callback);
         let word = callback.letter.parentWord;
         if (word.selectedAs.as != "mixed") {
             word.selectWord("mixed");    
@@ -682,7 +683,7 @@ class InsertWordsQuestion extends Question {
         if (questionObject.sessions.length == 0){
             return "Выберите одну или несколько сессий";
         }
-
+        // console.log(questionObject);
         if (questionObject.answer.variant2.length == 0){
             return "Выберите одно или несколько слов для вписывания";
         }
@@ -829,14 +830,30 @@ class InsertWordsQuestion extends Question {
         let slice;
         let wordText;
 
-        let findText = "{txt}"
-        for (let word of questionObject.answer){
-
-            firstIndex = questionObject.question_text.indexOf(findText);
+        let findText = ["{missed}", "{square}", "{mixed}"];
+        for (let word of questionObject.answer.variant2){
+            let fText;
+            for (fText of findText){
+                firstIndex = questionObject.question_text.indexOf(fText);
+                if (firstIndex != -1){
+                    break;
+                }
+            }
             slice = questionObject.question_text.slice(0, firstIndex);
             answerString += slice;
-            answerString += `<div class="missed-word">${word}</div>`;
-            questionObject.question_text = questionObject.question_text.slice(firstIndex + findText.length);
+            console.log(fText);
+            switch (fText){
+                case "{missed}":
+                    answerString += `<div class="missed-word">${word}</div>`;
+                    break;
+                case "{mixed}":
+                    answerString += `<div class="mixed-word">${word}</div>`;
+                    break;
+                case "{square}":
+                    answerString += `<div class="square-missed-letter">${word}</div>`;
+                    break;
+            }
+            questionObject.question_text = questionObject.question_text.slice(firstIndex + fText.length);
 
         }
         slice = questionObject.question_text.slice(0);

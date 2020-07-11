@@ -176,6 +176,18 @@ textarea:focus {
     color: #e21b1b;
 }
 
+.square-missed-letter {
+    display: inline;
+    border: 2px solid #000;
+    width: 20px;
+}
+
+.mixed-word {
+    display: inline;
+    border-bottom: 2px solid #1c941c;
+    color: #1c941c;
+}
+
 .palette-label {
     margin: 10px;
     font-size: 20px;
