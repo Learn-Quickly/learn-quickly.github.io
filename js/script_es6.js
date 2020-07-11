@@ -279,6 +279,17 @@ class Letter {
     get letter(){
         return this._letter;
     }
+
+    get questionText(){
+        switch (this.selectedAs.as){
+            case "nothing":
+                return this.letter;
+                break;
+            case "missed":
+                return InsertWordsQuestion.insertTypes.letter.missed;
+                break;
+        }
+    }
 }
 
 
@@ -393,6 +404,20 @@ class Word {
         }
         return null;
     }
+
+    get questionText(){
+        switch (this.selectedAs.as){
+            case "nothing":
+                return this.letters.map(letter => letter.questionText).join("");
+                break;
+            case "missed":
+                return InsertWordsQuestion.insertTypes.word.missed;
+                break;
+            case "mixed":
+                return InsertWordsQuestion.insertTypes.word.mixed;
+                break;
+        }
+    }
 }
 
 class TransformationPalette {
@@ -504,14 +529,35 @@ class SelectMixWord extends SelectorStrategy {
 class InsertWordsQuestion extends Question {
     type = 5;
 
+    // insertTypes = { // designation of selected object in json
+    //     "letter": {
+    //         "missed": "{square}"
+    //     },  
+    //     "word": {
+    //         "missed": "{missed}",
+    //         "mixed": "{missed}"
+    //     }
+    // };
+
+    static get insertTypes(){
+        return { // designation of selected object in json
+            "letter": {
+                "missed": "{square}"
+            },  
+            "word": {
+                "missed": "{missed}",
+                "mixed": "{mixed}"
+            }
+        };
+    }
+
     constructor(palette){
         super();
         this.question_div = document.createElement('div');
         this.question_header = htmlToElement(`<div class="col-10 input-div mt-5" id="div_input" contenteditable=true placeholder="Введите текст вопроса"></div>`);
         this.palette = palette;
         this.question_body = htmlToElement(`<div class="row justify-content-center"> 
-                        <div class="container"></div>
-
+                            <div class="container"></div>
                             <div class="col-11 mt-3" id="show_words"></div>
                         </div>`);
         this.question_body.firstChild.nextSibling.appendChild(this.palette.div);
@@ -566,11 +612,7 @@ class InsertWordsQuestion extends Question {
             answerString += slice;
             inputText = inputText.slice(firstIndex + wordText.length);
 
-            if (word.selected){
-                answerString += "{txt}";
-            } else {
-                answerString += wordText;
-            }
+            answerString += word.questionText;
 
         }
         slice = inputText.slice(0);
@@ -580,13 +622,49 @@ class InsertWordsQuestion extends Question {
     }
 
     getAnswer(){
-        let answers = [];
+        // let answers = [];
+        // for (let word of this.words_list){
+        //     if (word.selected){
+        //         answers.push(word.text);
+        //     }
+        // }
+        // return answers;
+        let answer = {
+            "variant1": {
+                "missed": [],
+                "square": [],
+                "mixed": []
+            },
+            "variant2": []
+        };
         for (let word of this.words_list){
-            if (word.selected){
-                answers.push(word.text);
+            if (word.selectedAs.as != "nothing") {
+                answer.variant2.push(word.text);
+                
+                switch (word.selectedAs.as) {
+                    case "missed":
+                        answer.variant1.missed.push(word.text);
+                        break;
+                    case "mixed":
+                        answer.variant1.mixed.push(word.text);
+                        break;
+                }
+                continue;
+            }
+            for (let letter of word.letters){
+                if (letter.selectedAs.as != "nothing"){
+                    answer.variant2.push(letter.letter);
+
+                    switch (letter.selectedAs.as) {
+                        case "missed":
+                            answer.variant1.square.push(letter.letter);
+                            break;
+                    }
+
+                }
             }
         }
-        return answers;
+        return answer;
     }
 
     toJson(){
@@ -605,7 +683,7 @@ class InsertWordsQuestion extends Question {
             return "Выберите одну или несколько сессий";
         }
 
-        if (questionObject.answer.length == 0){
+        if (questionObject.answer.variant2.length == 0){
             return "Выберите одно или несколько слов для вписывания";
         }
 
