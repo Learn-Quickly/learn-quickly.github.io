@@ -118,7 +118,12 @@ textarea:focus {
     border: 1px solid rgba(255, 255, 255, 0);
 }
 
-.word-wrap:hover, .session-label>span:hover {
+.word-wrap:hover {
+    border: 1px solid #FF7676;
+    cursor: pointer;
+}
+
+.session-label>span:hover {
     border: 1px solid #00C2FF;
     cursor: pointer;
 }
@@ -186,3 +191,15 @@ textarea:focus {
     border-style: solid;
     border-width: 2px;
 }
+
+.word-letter {
+    display: inline;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0);
+}
+
+.word-letter:hover {
+    border: 1px solid #00C2FF;
+    cursor: pointer;
+}
+
