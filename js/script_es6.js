@@ -2,8 +2,8 @@ const alphabet = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬ
 
 const question_type = document.getElementById("question_variants");
 
-const variative = document.getElementById("variative");
 const question_header = document.getElementById("question_header");
+const variative = document.getElementById("variative");
 
 const session_select = document.querySelectorAll(".session-checkbox");
 
@@ -224,16 +224,41 @@ class EnterAnswerQuestion extends Question {
 
 }
 
+
+class Letter {
+    constructor(parentWord, letter=""){
+        this.parentWord = parentWord;
+        this._letter = letter;
+        this.div = htmlToElement(`<div class="word-letter">${this.letter}</div>`);
+        this.div.addEventListener('click', e => {
+
+        });
+    }
+
+    render(){
+        this.div.innerText = this.text;
+    }
+
+    get letter(){
+        return this._letter;
+    }
+}
+
+
 class Word {
 
     constructor(parentQuestion, text=""){
         this.selected = false;
-        this.text = text;
+        this._text = text;
         this.parentQuestion = parentQuestion;
+        this.letters = [];
 
         this.div = htmlToElement(`<div class="word-wrap">${this.text}</div>`);
         this.div.addEventListener("click", e => {
             let word = this.getWordByDiv(e.target);
+            if (word == null) {
+                word = this.getWordByDiv(e.target.parentNode);
+            }
             if (word.selected){
                 word.selected = false;
             } else {
@@ -244,13 +269,33 @@ class Word {
         });
     }
 
+    compareLetters(){
+
+    }
+
+    buildLetters(){
+        this.letters = [];
+        for (let char of this.text){
+            this.letters.push(new Letter(this, char));
+        }
+    }
+
+    buildDiv(){
+        this.div.innerHTML = '';
+        this.buildLetters();
+        for (let letter of this.letters){
+            this.div.appendChild(letter.div);
+        }
+    }
+
     render(){
         if (this.selected){
             this.div.classList.add("word-wrap-selected");
         } else {
             this.div.classList.remove("word-wrap-selected");
         }
-        this.div.innerText = this.text;
+
+        this.buildDiv();
     }
 
     select(e){
@@ -263,8 +308,12 @@ class Word {
         word.render();
     }
 
+    get text(){
+        return this._text;
+    }
+
     changeText(text){
-        this.text = text;
+        this._text = text;
         this.render();
     }
 
@@ -417,15 +466,15 @@ class InsertWordsQuestion extends Question {
         // console.log(`previous words: ${prev_words}`);
         // console.log(`words strings: ${words_strings}`);
 
-        let longer;
+        let longest;
 
         if (words_strings.length > prev_words.length){
-            longer = words_strings;
+            longest = words_strings;
         } else {
-            longer = prev_words;
+            longest = prev_words;
         }
 
-        for (let i in longer) {
+        for (let i in longest) {
             let prev_word = prev_words[i];
             let curr_word = words_strings[i];
             // console.log(`previous: ${prev_word}`, `current: ${curr_word}`);
