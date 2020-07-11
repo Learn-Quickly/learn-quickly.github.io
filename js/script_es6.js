@@ -278,17 +278,42 @@ class Word {
     }
 }
 
+class TransformationPalette {
+    constructor(items) {
+        this.items = items;
+
+        this.div = document.createElement('div');
+        this.div.classList.add('row');
+        for (let item of items) {
+            this.div.appendChild(item.label);
+        }
+    }
+
+}
+
+class TransformationPaletteItem {
+    constructor(transfomation_name, color){
+        this.transfomation_name = transfomation_name;
+        this.color = color;
+        this.label = htmlToElement(`<label class="palette-label mt-3"><input type="radio" class="palette-radio d-none" name="palette-radio"><span style="background-color: ${this.color}; border-color: ${this.color};">${this.transfomation_name}</span></label> `);
+    }
+}
+
+
 class InsertWordsQuestion extends Question {
     type = 5;
 
-    constructor(){
+    constructor(palette){
         super();
         this.question_div = document.createElement('div');
         this.question_header = htmlToElement(`<div class="col-10 input-div mt-5" id="div_input" contenteditable=true placeholder="Введите текст вопроса"></div>`);
-        this.question_body = htmlToElement(`<div class="row justify-content-center">
+        this.palette = palette;
+        this.question_body = htmlToElement(`<div class="row justify-content-center"> 
+                        <div class="container"></div>
+
                             <div class="col-11 mt-3" id="show_words"></div>
                         </div>`);
-
+        this.question_body.firstChild.nextSibling.appendChild(this.palette.div);
         this.question_preview_part = htmlToElement(`<div class="container"><div class="row mt-3 justify-content-center"><h2>Предпросмотр:</h1></div>
                         <div class="row mt-3 justify-content-center">
                             <div class="col-11" id="question_example"></div>
@@ -311,7 +336,7 @@ class InsertWordsQuestion extends Question {
             this.renderPreview();
         })
 
-        this.words_show_div = this.question_div.firstChild.firstChild.nextSibling;
+        this.words_show_div = this.question_div.firstChild.firstChild.nextSibling.nextSibling.nextSibling;
     }
 
     filterWords(){
@@ -552,7 +577,13 @@ class InsertWordsQuestion extends Question {
 
 const firstTypeQuestion = new OneChooseQuestion();
 const fourthTypeQuestion = new EnterAnswerQuestion();
-const fifthTypeQuestion = new InsertWordsQuestion();
+
+const TransformationPaletteItems = [
+    new TransformationPaletteItem('Пропущенное слово', 'lightcoral'),
+    new TransformationPaletteItem('Пропущенные буквы', 'lightblue'),
+    new TransformationPaletteItem('Перемешанное слово', 'lightgreen'),
+]
+const fifthTypeQuestion = new InsertWordsQuestion(new TransformationPalette(TransformationPaletteItems));
 
 
 function getQuestionObject(){
