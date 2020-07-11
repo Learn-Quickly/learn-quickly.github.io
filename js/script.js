@@ -34,8 +34,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var alphabet = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ";
 var question_type = document.getElementById("question_variants");
-var variative = document.getElementById("variative");
 var question_header = document.getElementById("question_header");
+var variative = document.getElementById("variative");
 var session_select = document.querySelectorAll(".session-checkbox");
 var json_place = document.getElementById('json_place');
 
@@ -307,76 +307,151 @@ var EnterAnswerQuestion = /*#__PURE__*/function (_Question2) {
   return EnterAnswerQuestion;
 }(Question);
 
-var Word = /*#__PURE__*/function () {
-  function Word(parentQuestion) {
+var Letter = /*#__PURE__*/function () {
+  _createClass(Letter, [{
+    key: "selectOptions",
+    get: function get() {
+      return ["nothing", "missed"];
+    }
+  }]);
+
+  function Letter(parentWord) {
     var _this3 = this;
 
+    var letter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+
+    _classCallCheck(this, Letter);
+
+    this.parentWord = parentWord;
+    this._letter = letter;
+    this.div = htmlToElement("<div class=\"word-letter\">".concat(this.letter, "</div>"));
+    this.div.addEventListener('click', function (e) {
+      _this3.parentWord.select({
+        "event": e,
+        "letter": _this3
+      });
+
+      _this3.parentWord.parentQuestion.renderPreview();
+    });
+    this.selectedAs = {
+      "as": "nothing"
+    };
+  }
+
+  _createClass(Letter, [{
+    key: "render",
+    value: function render() {
+      switch (this.selectedAs.as) {
+        case "nothing":
+          this.div.style.backgroundColor = "rgba(0, 0, 0, 0)";
+          break;
+
+        case "missed":
+          this.div.style.backgroundColor = "lightblue";
+          this.parentWord.selectWord("nothing");
+          this.parentWord.render();
+          break;
+      }
+
+      this.div.innerText = this.letter;
+    }
+  }, {
+    key: "selectLetter",
+    value: function selectLetter(as) {
+      switch (as) {
+        case "nothing":
+          this.selectedAs.as = as;
+          break;
+
+        case "missed":
+          this.selectedAs.as = as;
+          break;
+
+        default:
+          throw new Error("incorrect select option");
+      }
+
+      if (this.selectOptions.indexOf(as) != -1) {
+        this.selectedAs.as = as;
+      } else {
+        throw new Error("incorrect select option");
+      }
+    }
+  }, {
+    key: "letter",
+    get: function get() {
+      return this._letter;
+    }
+  }, {
+    key: "questionText",
+    get: function get() {
+      switch (this.selectedAs.as) {
+        case "nothing":
+          return this.letter;
+          break;
+
+        case "missed":
+          return InsertWordsQuestion.insertTypes.letter.missed;
+          break;
+      }
+    }
+  }]);
+
+  return Letter;
+}();
+
+var Word = /*#__PURE__*/function () {
+  function Word(parentQuestion) {
     var text = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 
     _classCallCheck(this, Word);
 
+    _defineProperty(this, "selectOptions", ["nothing", "missed", "mixed"]);
+
     this.selected = false;
-    this.text = text;
+    this._text = text;
     this.parentQuestion = parentQuestion;
-    this.div = htmlToElement("<div class=\"word-wrap\">".concat(this.text, "</div>"));
-    this.div.addEventListener("click", function (e) {
-      var word = _this3.getWordByDiv(e.target);
+    this.letters = [];
+    this.div = htmlToElement("<div class=\"word-wrap\">".concat(this.text, "</div>")); // this.div.addEventListener("click", e => {
+    //     let word = this.getWordByDiv(e.target);
+    //     if (word == null) {
+    //         word = this.getWordByDiv(e.target.parentNode);
+    //     }
+    //     if (word.selected){
+    //         word.selected = false;
+    //     } else {
+    //         word.selected = true;
+    //     }
+    //     word.render();
+    //     this.parentQuestion.renderPreview();
+    // });
 
-      if (word.selected) {
-        word.selected = false;
-      } else {
-        word.selected = true;
-      }
-
-      word.render();
-
-      _this3.parentQuestion.renderPreview();
-    });
+    this.selectedAs = {
+      "as": "nothing"
+    };
   }
 
   _createClass(Word, [{
-    key: "render",
-    value: function render() {
-      if (this.selected) {
-        this.div.classList.add("word-wrap-selected");
+    key: "selectWord",
+    value: function selectWord(as) {
+      if (this.selectOptions.indexOf(as) != -1) {
+        this.selectedAs.as = as;
       } else {
-        this.div.classList.remove("word-wrap-selected");
+        throw new Error("incorrect select option");
       }
-
-      this.div.innerText = this.text;
     }
   }, {
-    key: "select",
-    value: function select(e) {
-      var word = this.getWordByDiv(this);
+    key: "buildLetters",
+    value: function buildLetters() {
+      var new_letters = [];
 
-      if (word.selected) {
-        word.selected = false;
-      } else {
-        word.selected = true;
-      }
-
-      word.render();
-    }
-  }, {
-    key: "changeText",
-    value: function changeText(text) {
-      this.text = text;
-      this.render();
-    }
-  }, {
-    key: "getWordByDiv",
-    value: function getWordByDiv(div) {
-      var _iterator3 = _createForOfIteratorHelper(this.parentQuestion.words_list),
+      var _iterator3 = _createForOfIteratorHelper(this.text),
           _step3;
 
       try {
         for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var word = _step3.value;
-
-          if (word.div === div) {
-            return word;
-          }
+          var char = _step3.value;
+          new_letters.push(new Letter(this, char));
         }
       } catch (err) {
         _iterator3.e(err);
@@ -384,30 +459,420 @@ var Word = /*#__PURE__*/function () {
         _iterator3.f();
       }
 
+      if (new_letters.map(function (letter) {
+        return letter.letter;
+      }).join("") != this.letters.map(function (letter) {
+        return letter.letter;
+      }).join("")) {
+        this.letters = new_letters;
+      }
+    }
+  }, {
+    key: "buildDiv",
+    value: function buildDiv() {
+      this.div.innerHTML = '';
+      this.buildLetters();
+
+      var _iterator4 = _createForOfIteratorHelper(this.letters),
+          _step4;
+
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var letter = _step4.value;
+          this.div.appendChild(letter.div);
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      // if (this.selected){
+      //     this.div.classList.add("word-wrap-selected");
+      // } else {
+      //     this.div.classList.remove("word-wrap-selected");
+      // }
+      // console.log(this.selectedAs);
+      switch (this.selectedAs.as) {
+        case "nothing":
+          this.div.style.backgroundColor = "rgba(0, 0, 0, 0)";
+          break;
+
+        case "missed":
+          this.div.style.backgroundColor = "#FF7676";
+          break;
+
+        case "mixed":
+          this.div.style.backgroundColor = "lightgreen";
+          break;
+      }
+
+      this.buildDiv();
+    }
+  }, {
+    key: "select",
+    value: function select(callback) {
+      // let word = this.getWordByDiv(this);
+      // if (word.selected){
+      //     word.selected = false;
+      // } else {
+      //     word.selected = true;
+      // }
+      // word.render();
+      this.parentQuestion.select(callback);
+    }
+  }, {
+    key: "changeText",
+    value: function changeText(text) {
+      this._text = text;
+      this.render();
+    }
+  }, {
+    key: "getWordByDiv",
+    value: function getWordByDiv(div) {
+      var _iterator5 = _createForOfIteratorHelper(this.parentQuestion.words_list),
+          _step5;
+
+      try {
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var word = _step5.value;
+
+          if (word.div === div) {
+            return word;
+          }
+        }
+      } catch (err) {
+        _iterator5.e(err);
+      } finally {
+        _iterator5.f();
+      }
+
       return null;
+    }
+  }, {
+    key: "getLetterByDiv",
+    value: function getLetterByDiv(div) {
+      var _iterator6 = _createForOfIteratorHelper(this.letters),
+          _step6;
+
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var letter = _step6.value;
+
+          if (letter.div === div) {
+            return letter;
+          }
+        }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
+      }
+
+      return null;
+    }
+  }, {
+    key: "text",
+    get: function get() {
+      return this._text;
+    }
+  }, {
+    key: "questionText",
+    get: function get() {
+      switch (this.selectedAs.as) {
+        case "nothing":
+          return this.letters.map(function (letter) {
+            return letter.questionText;
+          }).join("");
+          break;
+
+        case "missed":
+          return InsertWordsQuestion.insertTypes.word.missed;
+          break;
+
+        case "mixed":
+          return InsertWordsQuestion.insertTypes.word.mixed;
+          break;
+      }
     }
   }]);
 
   return Word;
 }();
 
+var TransformationPalette = /*#__PURE__*/function () {
+  function TransformationPalette(items) {
+    _classCallCheck(this, TransformationPalette);
+
+    this.items = items;
+    this.div = document.createElement('div');
+    this.div.classList.add('row');
+
+    var _iterator7 = _createForOfIteratorHelper(items),
+        _step7;
+
+    try {
+      for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+        var item = _step7.value;
+        this.div.appendChild(item.label);
+      }
+    } catch (err) {
+      _iterator7.e(err);
+    } finally {
+      _iterator7.f();
+    }
+  }
+
+  _createClass(TransformationPalette, [{
+    key: "getItemByNode",
+    value: function getItemByNode(node) {
+      var _iterator8 = _createForOfIteratorHelper(this.items),
+          _step8;
+
+      try {
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var item = _step8.value;
+
+          if (item.label === node) {
+            return item;
+          }
+        }
+      } catch (err) {
+        _iterator8.e(err);
+      } finally {
+        _iterator8.f();
+      }
+
+      throw new Error("Such TransformationPaletteItem was not found");
+    }
+  }, {
+    key: "getSelectedPaletteItem",
+    value: function getSelectedPaletteItem() {
+      var _iterator9 = _createForOfIteratorHelper(this.items),
+          _step9;
+
+      try {
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var item = _step9.value;
+
+          if (item.label.firstChild.checked) {
+            return item;
+          }
+        }
+      } catch (err) {
+        _iterator9.e(err);
+      } finally {
+        _iterator9.f();
+      }
+
+      throw new Error("Not found slected palette item");
+    }
+  }]);
+
+  return TransformationPalette;
+}();
+
+var TransformationPaletteItem = function TransformationPaletteItem(transfomation_name, color, selectorStrategy) {
+  _classCallCheck(this, TransformationPaletteItem);
+
+  this.transfomation_name = transfomation_name;
+  this.color = color;
+  this.label = htmlToElement("<label class=\"palette-label mt-3\"><input type=\"radio\" class=\"palette-radio d-none\" name=\"palette-radio\"><span style=\"background-color: ".concat(this.color, "; border-color: ").concat(this.color, ";\">").concat(this.transfomation_name, "</span></label> "));
+  this.selectorStrategy = selectorStrategy;
+};
+
+var SelectorStrategy = /*#__PURE__*/function () {
+  function SelectorStrategy() {
+    _classCallCheck(this, SelectorStrategy);
+  }
+
+  _createClass(SelectorStrategy, [{
+    key: "select",
+    value: function select(callback) {
+      throw new NotImplementedError("Not implemented");
+    }
+  }]);
+
+  return SelectorStrategy;
+}();
+
+var SelectMissWord = /*#__PURE__*/function (_SelectorStrategy) {
+  _inherits(SelectMissWord, _SelectorStrategy);
+
+  var _super3 = _createSuper(SelectMissWord);
+
+  function SelectMissWord() {
+    _classCallCheck(this, SelectMissWord);
+
+    return _super3.apply(this, arguments);
+  }
+
+  _createClass(SelectMissWord, [{
+    key: "unselectLetters",
+    value: function unselectLetters(letters) {
+      var _iterator10 = _createForOfIteratorHelper(letters),
+          _step10;
+
+      try {
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+          var letter = _step10.value;
+          letter.selectLetter("nothing");
+          letter.render();
+        }
+      } catch (err) {
+        _iterator10.e(err);
+      } finally {
+        _iterator10.f();
+      }
+    }
+  }, {
+    key: "select",
+    value: function select(callback) {
+      // console.log("in select miss word", callback);
+      var word = callback.letter.parentWord;
+
+      if (word.selectedAs.as != "missed") {
+        word.selectWord("missed");
+      } else {
+        word.selectWord("nothing");
+      }
+
+      this.unselectLetters(word.letters);
+      word.render();
+    }
+  }]);
+
+  return SelectMissWord;
+}(SelectorStrategy);
+
+var SelectMissLetter = /*#__PURE__*/function (_SelectorStrategy2) {
+  _inherits(SelectMissLetter, _SelectorStrategy2);
+
+  var _super4 = _createSuper(SelectMissLetter);
+
+  function SelectMissLetter() {
+    _classCallCheck(this, SelectMissLetter);
+
+    return _super4.apply(this, arguments);
+  }
+
+  _createClass(SelectMissLetter, [{
+    key: "select",
+    value: function select(callback) {
+      // console.log("in select miss letter", callback);
+      var letter = callback.letter;
+
+      if (letter.selectedAs.as != "missed") {
+        letter.selectLetter("missed");
+      } else {
+        letter.selectLetter("nothing");
+      }
+
+      letter.render();
+    }
+  }]);
+
+  return SelectMissLetter;
+}(SelectorStrategy);
+
+var SelectMixWord = /*#__PURE__*/function (_SelectorStrategy3) {
+  _inherits(SelectMixWord, _SelectorStrategy3);
+
+  var _super5 = _createSuper(SelectMixWord);
+
+  function SelectMixWord() {
+    _classCallCheck(this, SelectMixWord);
+
+    return _super5.apply(this, arguments);
+  }
+
+  _createClass(SelectMixWord, [{
+    key: "unselectLetters",
+    value: function unselectLetters(letters) {
+      var _iterator11 = _createForOfIteratorHelper(letters),
+          _step11;
+
+      try {
+        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+          var letter = _step11.value;
+          letter.selectLetter("nothing");
+          letter.render();
+        }
+      } catch (err) {
+        _iterator11.e(err);
+      } finally {
+        _iterator11.f();
+      }
+    }
+  }, {
+    key: "select",
+    value: function select(callback) {
+      // console.log("in select mix word", callback);
+      var word = callback.letter.parentWord;
+
+      if (word.selectedAs.as != "mixed") {
+        word.selectWord("mixed");
+      } else {
+        word.selectWord("nothing");
+      }
+
+      this.unselectLetters(word.letters);
+      word.render();
+    }
+  }]);
+
+  return SelectMixWord;
+}(SelectorStrategy);
+
 var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
   _inherits(InsertWordsQuestion, _Question3);
 
-  var _super3 = _createSuper(InsertWordsQuestion);
+  var _super6 = _createSuper(InsertWordsQuestion);
 
-  function InsertWordsQuestion() {
+  _createClass(InsertWordsQuestion, null, [{
+    key: "insertTypes",
+    // insertTypes = { // designation of selected object in json
+    //     "letter": {
+    //         "missed": "{square}"
+    //     },  
+    //     "word": {
+    //         "missed": "{missed}",
+    //         "mixed": "{missed}"
+    //     }
+    // };
+    get: function get() {
+      return {
+        // designation of selected object in json
+        "letter": {
+          "missed": "{square}"
+        },
+        "word": {
+          "missed": "{missed}",
+          "mixed": "{mixed}"
+        }
+      };
+    }
+  }]);
+
+  function InsertWordsQuestion(palette) {
     var _this4;
 
     _classCallCheck(this, InsertWordsQuestion);
 
-    _this4 = _super3.call(this);
+    _this4 = _super6.call(this);
 
     _defineProperty(_assertThisInitialized(_this4), "type", 5);
 
     _this4.question_div = document.createElement('div');
     _this4.question_header = htmlToElement("<div class=\"col-10 input-div mt-5\" id=\"div_input\" contenteditable=true placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\"></div>");
-    _this4.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
+    _this4.palette = palette;
+    _this4.question_body = htmlToElement("<div class=\"row justify-content-center\"> \n                            <div class=\"container\"></div>\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
+
+    _this4.question_body.firstChild.nextSibling.appendChild(_this4.palette.div);
+
     _this4.question_preview_part = htmlToElement("<div class=\"container\"><div class=\"row mt-3 justify-content-center\"><h2>\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440:</h1></div>\n                        <div class=\"row mt-3 justify-content-center\">\n                            <div class=\"col-11\" id=\"question_example\"></div>\n                        </div></div>");
     _this4.question_preview = _this4.question_preview_part.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
 
@@ -427,7 +892,7 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       _this4.renderPreview();
     });
 
-    _this4.words_show_div = _this4.question_div.firstChild.firstChild.nextSibling;
+    _this4.words_show_div = _this4.question_div.firstChild.firstChild.nextSibling.nextSibling.nextSibling;
     return _this4;
   }
 
@@ -450,28 +915,23 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       var slice;
       var wordText;
 
-      var _iterator4 = _createForOfIteratorHelper(this.words_list),
-          _step4;
+      var _iterator12 = _createForOfIteratorHelper(this.words_list),
+          _step12;
 
       try {
-        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-          var word = _step4.value;
+        for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+          var word = _step12.value;
           wordText = word.text;
           firstIndex = inputText.indexOf(wordText);
           slice = inputText.slice(0, firstIndex);
           answerString += slice;
           inputText = inputText.slice(firstIndex + wordText.length);
-
-          if (word.selected) {
-            answerString += "{txt}";
-          } else {
-            answerString += wordText;
-          }
+          answerString += word.questionText;
         }
       } catch (err) {
-        _iterator4.e(err);
+        _iterator12.e(err);
       } finally {
-        _iterator4.f();
+        _iterator12.f();
       }
 
       slice = inputText.slice(0);
@@ -481,26 +941,75 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
   }, {
     key: "getAnswer",
     value: function getAnswer() {
-      var answers = [];
+      // let answers = [];
+      // for (let word of this.words_list){
+      //     if (word.selected){
+      //         answers.push(word.text);
+      //     }
+      // }
+      // return answers;
+      var answer = {
+        "variant1": {
+          "missed": [],
+          "square": [],
+          "mixed": []
+        },
+        "variant2": []
+      };
 
-      var _iterator5 = _createForOfIteratorHelper(this.words_list),
-          _step5;
+      var _iterator13 = _createForOfIteratorHelper(this.words_list),
+          _step13;
 
       try {
-        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-          var word = _step5.value;
+        for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+          var word = _step13.value;
 
-          if (word.selected) {
-            answers.push(word.text);
+          if (word.selectedAs.as != "nothing") {
+            answer.variant2.push(word.text);
+
+            switch (word.selectedAs.as) {
+              case "missed":
+                answer.variant1.missed.push(word.text);
+                break;
+
+              case "mixed":
+                answer.variant1.mixed.push(word.text);
+                break;
+            }
+
+            continue;
+          }
+
+          var _iterator14 = _createForOfIteratorHelper(word.letters),
+              _step14;
+
+          try {
+            for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+              var letter = _step14.value;
+
+              if (letter.selectedAs.as != "nothing") {
+                answer.variant2.push(letter.letter);
+
+                switch (letter.selectedAs.as) {
+                  case "missed":
+                    answer.variant1.square.push(letter.letter);
+                    break;
+                }
+              }
+            }
+          } catch (err) {
+            _iterator14.e(err);
+          } finally {
+            _iterator14.f();
           }
         }
       } catch (err) {
-        _iterator5.e(err);
+        _iterator13.e(err);
       } finally {
-        _iterator5.f();
+        _iterator13.f();
       }
 
-      return answers;
+      return answer;
     }
   }, {
     key: "toJson",
@@ -518,9 +1027,10 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
 
       if (questionObject.sessions.length == 0) {
         return "Выберите одну или несколько сессий";
-      }
+      } // console.log(questionObject);
 
-      if (questionObject.answer.length == 0) {
+
+      if (questionObject.answer.variant2.length == 0) {
         return "Выберите одно или несколько слов для вписывания";
       }
 
@@ -533,15 +1043,15 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       var prev_words = this.getSavedWordsStrings(); // console.log(`previous words: ${prev_words}`);
       // console.log(`words strings: ${words_strings}`);
 
-      var longer;
+      var longest;
 
       if (words_strings.length > prev_words.length) {
-        longer = words_strings;
+        longest = words_strings;
       } else {
-        longer = prev_words;
+        longest = prev_words;
       }
 
-      for (var i in longer) {
+      for (var i in longest) {
         var prev_word = prev_words[i];
         var curr_word = words_strings[i]; // console.log(`previous: ${prev_word}`, `current: ${curr_word}`);
 
@@ -636,19 +1146,19 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       } // console.log(words_list);
 
 
-      var _iterator6 = _createForOfIteratorHelper(this.words_list),
-          _step6;
+      var _iterator15 = _createForOfIteratorHelper(this.words_list),
+          _step15;
 
       try {
-        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-          var word = _step6.value;
+        for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+          var word = _step15.value;
           // console.log(word, words_list)
           words.push(word.text);
         }
       } catch (err) {
-        _iterator6.e(err);
+        _iterator15.e(err);
       } finally {
-        _iterator6.f();
+        _iterator15.f();
       }
 
       return words;
@@ -658,18 +1168,19 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
     value: function renderWords() {
       this.words_show_div.innerHTML = "";
 
-      var _iterator7 = _createForOfIteratorHelper(this.words_list),
-          _step7;
+      var _iterator16 = _createForOfIteratorHelper(this.words_list),
+          _step16;
 
       try {
-        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-          var word = _step7.value;
+        for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+          var word = _step16.value;
           this.words_show_div.appendChild(word.div);
+          word.render();
         }
       } catch (err) {
-        _iterator7.e(err);
+        _iterator16.e(err);
       } finally {
-        _iterator7.f();
+        _iterator16.f();
       }
     }
   }, {
@@ -689,34 +1200,74 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       var firstIndex;
       var slice;
       var wordText;
-      var findText = "{txt}";
+      var findText = ["{missed}", "{square}", "{mixed}"];
 
-      var _iterator8 = _createForOfIteratorHelper(questionObject.answer),
-          _step8;
+      var _iterator17 = _createForOfIteratorHelper(questionObject.answer.variant2),
+          _step17;
 
       try {
-        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-          var word = _step8.value;
-          firstIndex = questionObject.question_text.indexOf(findText);
+        for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+          var word = _step17.value;
+          var fText = void 0;
+
+          var _iterator18 = _createForOfIteratorHelper(findText),
+              _step18;
+
+          try {
+            for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+              fText = _step18.value;
+              firstIndex = questionObject.question_text.indexOf(fText);
+
+              if (firstIndex != -1) {
+                break;
+              }
+            }
+          } catch (err) {
+            _iterator18.e(err);
+          } finally {
+            _iterator18.f();
+          }
+
           slice = questionObject.question_text.slice(0, firstIndex);
           answerString += slice;
-          answerString += "<div class=\"missed-word\">".concat(word, "</div>");
-          questionObject.question_text = questionObject.question_text.slice(firstIndex + findText.length);
+          console.log(fText);
+
+          switch (fText) {
+            case "{missed}":
+              answerString += "<div class=\"missed-word\">".concat(word, "</div>");
+              break;
+
+            case "{mixed}":
+              answerString += "<div class=\"mixed-word\">".concat(word, "</div>");
+              break;
+
+            case "{square}":
+              answerString += "<div class=\"square-missed-letter\">".concat(word, "</div>");
+              break;
+          }
+
+          questionObject.question_text = questionObject.question_text.slice(firstIndex + fText.length);
         }
       } catch (err) {
-        _iterator8.e(err);
+        _iterator17.e(err);
       } finally {
-        _iterator8.f();
+        _iterator17.f();
       }
 
       slice = questionObject.question_text.slice(0);
       answerString += slice;
       this.question_preview.innerHTML = answerString.replace(/(\r\n|\n|\r)/g, "<br/>");
     }
+  }, {
+    key: "select",
+    value: function select(callback) {
+      var palleteItem = this.palette.getSelectedPaletteItem();
+      palleteItem.selectorStrategy.select(callback);
+    }
   }], [{
     key: "removeOddOut",
     value: function removeOddOut(str) {
-      str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-|[\r\n]+)/g, ' ');
+      str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-|[\r\n]+|&)/g, ' ');
       str = str.replace(/\s{2,}/g, ' ');
       return str;
     }
@@ -727,7 +1278,8 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
 
 var firstTypeQuestion = new OneChooseQuestion();
 var fourthTypeQuestion = new EnterAnswerQuestion();
-var fifthTypeQuestion = new InsertWordsQuestion();
+var TransformationPaletteItems = [new TransformationPaletteItem('Пропущенное слово', 'lightcoral', new SelectMissWord()), new TransformationPaletteItem('Пропущенные буквы', 'lightblue', new SelectMissLetter()), new TransformationPaletteItem('Перемешанное слово', 'lightgreen', new SelectMixWord())];
+var fifthTypeQuestion = new InsertWordsQuestion(new TransformationPalette(TransformationPaletteItems));
 
 function getQuestionObject() {
   var question;
@@ -761,21 +1313,21 @@ function getQuestionObject() {
 function getSessions() {
   var sessions = [];
 
-  var _iterator9 = _createForOfIteratorHelper(session_select),
-      _step9;
+  var _iterator19 = _createForOfIteratorHelper(session_select),
+      _step19;
 
   try {
-    for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-      var checkbox = _step9.value;
+    for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+      var checkbox = _step19.value;
 
       if (checkbox.checked) {
         sessions.push(parseInt(checkbox.name));
       }
     }
   } catch (err) {
-    _iterator9.e(err);
+    _iterator19.e(err);
   } finally {
-    _iterator9.f();
+    _iterator19.f();
   }
 
   return sessions;
