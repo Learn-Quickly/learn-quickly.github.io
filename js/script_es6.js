@@ -231,7 +231,10 @@ class Letter {
         this._letter = letter;
         this.div = htmlToElement(`<div class="word-letter">${this.letter}</div>`);
         this.div.addEventListener('click', e => {
-
+            this.parentWord.select({
+                "event": e,
+                "letter": this
+            });
         });
     }
 
@@ -254,19 +257,20 @@ class Word {
         this.letters = [];
 
         this.div = htmlToElement(`<div class="word-wrap">${this.text}</div>`);
-        this.div.addEventListener("click", e => {
-            let word = this.getWordByDiv(e.target);
-            if (word == null) {
-                word = this.getWordByDiv(e.target.parentNode);
-            }
-            if (word.selected){
-                word.selected = false;
-            } else {
-                word.selected = true;
-            }
-            word.render();
-            this.parentQuestion.renderPreview();
-        });
+        // this.div.addEventListener("click", e => {
+        //     let word = this.getWordByDiv(e.target);
+        //     if (word == null) {
+        //         word = this.getWordByDiv(e.target.parentNode);
+        //     }
+        //     if (word.selected){
+        //         word.selected = false;
+        //     } else {
+        //         word.selected = true;
+        //     }
+        //     word.render();
+        //     this.parentQuestion.renderPreview();
+        // });
+
     }
 
     compareLetters(){
@@ -298,14 +302,15 @@ class Word {
         this.buildDiv();
     }
 
-    select(e){
-        let word = this.getWordByDiv(this);
-        if (word.selected){
-            word.selected = false;
-        } else {
-            word.selected = true;
-        }
-        word.render();
+    select(callback){
+        // let word = this.getWordByDiv(this);
+        // if (word.selected){
+        //     word.selected = false;
+        // } else {
+        //     word.selected = true;
+        // }
+        // word.render();
+        this.parentQuestion.select(callback);
     }
 
     get text(){
@@ -325,6 +330,15 @@ class Word {
         }
         return null;
     }
+
+    getLetterByDiv(div){
+        for (let letter of this.letters){
+            if (letter.div === div){
+                return letter;
+            }
+        }
+        return null;
+    }
 }
 
 class TransformationPalette {
@@ -338,13 +352,60 @@ class TransformationPalette {
         }
     }
 
+    getItemByNode(node){
+        for (let item of this.items){
+            if (item.label === node) {
+                return item;
+            }
+        }
+        throw (new Error("Such TransformationPaletteItem was not found"));
+    }
+
+    getSelectedPaletteItem(){
+        for (let item of this.items) {
+            if (item.label.firstChild.checked){
+                return item;
+            }
+        }
+        throw (new Error("Not found slected palette item"));
+    }
 }
 
 class TransformationPaletteItem {
-    constructor(transfomation_name, color){
+    constructor(transfomation_name, color, selectorStrategy){
         this.transfomation_name = transfomation_name;
         this.color = color;
         this.label = htmlToElement(`<label class="palette-label mt-3"><input type="radio" class="palette-radio d-none" name="palette-radio"><span style="background-color: ${this.color}; border-color: ${this.color};">${this.transfomation_name}</span></label> `);
+        this.selectorStrategy = selectorStrategy;
+    }
+}
+
+
+class SelectorStrategy {
+    select(callback){
+        throw (new NotImplementedError("Not implemented"));
+    }
+}
+
+
+class SelectMissWord extends SelectorStrategy {
+    select(callback) {
+        console.log("in select miss word", callback);
+    }
+}
+
+
+class SelectMissLetter extends SelectorStrategy {
+    select(callback){
+        console.log("in select miss letter", callback);
+
+    }
+}
+
+
+class SelectMixWord extends SelectorStrategy {
+    select(callback) {
+        console.log("in select mix word", callback);
     }
 }
 
@@ -383,7 +444,7 @@ class InsertWordsQuestion extends Question {
             // console.log(change);
             this.processChange(change);
             this.renderPreview();
-        })
+        });
 
         this.words_show_div = this.question_div.firstChild.firstChild.nextSibling.nextSibling.nextSibling;
     }
@@ -576,6 +637,7 @@ class InsertWordsQuestion extends Question {
         this.words_show_div.innerHTML = "";
         for (let word of this.words_list){
             this.words_show_div.appendChild(word.div);
+            word.render();
         }
     }
 
@@ -615,6 +677,13 @@ class InsertWordsQuestion extends Question {
     }
 
 
+    select(callback){
+        let palleteItem = this.palette.getSelectedPaletteItem();
+        palleteItem.selectorStrategy.select(callback);
+
+    }
+
+
     static removeOddOut(str){
         str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-|[\r\n]+)/g, ' ');
         str = str.replace(/\s{2,}/g, ' ');
@@ -628,9 +697,9 @@ const firstTypeQuestion = new OneChooseQuestion();
 const fourthTypeQuestion = new EnterAnswerQuestion();
 
 const TransformationPaletteItems = [
-    new TransformationPaletteItem('Пропущенное слово', 'lightcoral'),
-    new TransformationPaletteItem('Пропущенные буквы', 'lightblue'),
-    new TransformationPaletteItem('Перемешанное слово', 'lightgreen'),
+    new TransformationPaletteItem('Пропущенное слово', 'lightcoral', new SelectMissWord()),
+    new TransformationPaletteItem('Пропущенные буквы', 'lightblue', new SelectMissLetter()),
+    new TransformationPaletteItem('Перемешанное слово', 'lightgreen', new SelectMixWord()),
 ]
 const fifthTypeQuestion = new InsertWordsQuestion(new TransformationPalette(TransformationPaletteItems));
 
