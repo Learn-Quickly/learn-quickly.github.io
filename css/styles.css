@@ -131,16 +131,16 @@ textarea:focus {
     background-color: #FF7676;
 }
 
-input:checked + span {
+.session-checkbox:checked + span {
     background-color: #00C2FF;
 }
 
-input:checked:hover + span{
+.session-checkbox:checked:hover + span{
     background-color: #7ADFFF;
     border-color: #7ADFFF;
 }
 
-input:hover {
+.session-checkbox:hover {
     border: 1px solid #00C2FF;
 }
 
@@ -169,4 +169,20 @@ input:hover {
     display: inline;
     border-bottom: 2px solid #FF7676;
     color: #e21b1b;
+}
+
+.palette-label {
+    margin: 10px;
+    font-size: 20px;
+}
+
+.palette-label span {
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.palette-radio:checked + span {
+    background-color: #fff !important;
+    border-style: solid;
+    border-width: 2px;
 }

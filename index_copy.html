@@ -17,7 +17,7 @@
             <div class="card" id="question_card">
                 <div class="card-body">
                   <div class="row">
-                    <div class="container col-5 col-sm-12 ml-3">
+                    <div class="container col-sm-12 col-5 ml-3">
                         <h1>Сессии:</h1>
                         <div id="session_variants">
                             <label class="session-label mt-3"><input type="checkbox" checked class="session-checkbox d-none" name="1"><span>1</span></label>
@@ -31,7 +31,21 @@
                     
                 </div>
                     <div class="row justify-content-center" id="question_header"></div>
-                    <div class="container mt-5" id="variative"></div>
+                    <div class="container mt-5" id="variative">
+                        <hr>
+
+                        <div class="container">
+                            <div class="row">
+                                <label class="palette-label mt-3"><input type="radio" checked class="palette-radio d-none" name="palette-radio"><span style="background-color: lightcoral; border-color: lightcoral;">Пропущенное слово</span></label>
+                                <label class="palette-label mt-3"><input type="radio" class="palette-radio d-none" name="palette-radio"><span style="background-color: lightblue; border-color: lightblue;">Пропущенные буквы</span></label>
+                                <label class="palette-label mt-3"><input type="radio" class="palette-radio d-none" name="palette-radio"><span style="background-color: lightgreen; border-color: lightgreen;">Перемешанное слово</span></label>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-11 mt-3" id="show_words"></div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
             <div class="card mt-5" id="json_card">
@@ -41,5 +55,5 @@
             </div>
         </div>
     </body>
-    <script type="text/javascript" src="js/script_es6.js"></script>
+    <!-- <script type="text/javascript" src="js/script_es6.js"></script> -->
 </html>
