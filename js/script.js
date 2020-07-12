@@ -1,5 +1,13 @@
 "use strict";
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
@@ -1199,7 +1207,6 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       var answerString = "";
       var firstIndex;
       var slice;
-      var wordText;
       var findText = ["{missed}", "{square}", "{mixed}"];
 
       var _iterator17 = _createForOfIteratorHelper(questionObject.answer.variant2),
@@ -1208,7 +1215,9 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       try {
         for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
           var word = _step17.value;
-          var fText = void 0;
+          var fText = void 0; // в этой переменной будут находиться значения из findText
+
+          var found = {}; // здесь будут находиться значения такого вида: fText: index
 
           var _iterator18 = _createForOfIteratorHelper(findText),
               _step18;
@@ -1216,10 +1225,12 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
           try {
             for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
               fText = _step18.value;
+              // заполняем found 
               firstIndex = questionObject.question_text.indexOf(fText);
 
               if (firstIndex != -1) {
-                break;
+                // Добавляем значения если находим в тексте вопроса что-либо из findText. 
+                found[fText] = firstIndex;
               }
             }
           } catch (err) {
@@ -1228,9 +1239,20 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
             _iterator18.f();
           }
 
-          slice = questionObject.question_text.slice(0, firstIndex);
+          firstIndex = Math.min.apply(Math, _toConsumableArray(Object.values(found))); // минимальным значением будет первое вхождение 
+          // чего-либо из findText в строку вопроса
+
+          for (var x in found) {
+            // находим ключ из found с минимальным значением (firstIndex)
+            if (found[x] == firstIndex) {
+              fText = x;
+            }
+          }
+
+          slice = questionObject.question_text.slice(0, firstIndex); // срез строки вопроса 
+          // до первого вхождения fText 
+
           answerString += slice;
-          console.log(fText);
 
           switch (fText) {
             case "{missed}":
@@ -1254,8 +1276,8 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
         _iterator17.f();
       }
 
-      slice = questionObject.question_text.slice(0);
-      answerString += slice;
+      answerString += questionObject.question_text; // добавляем в строку ответа оставшуюся часть вопроса
+
       this.question_preview.innerHTML = answerString.replace(/(\r\n|\n|\r)/g, "<br/>");
     }
   }, {

@@ -828,20 +828,32 @@ class InsertWordsQuestion extends Question {
 
         let firstIndex;
         let slice;
-        let wordText;
 
         let findText = ["{missed}", "{square}", "{mixed}"];
         for (let word of questionObject.answer.variant2){
-            let fText;
-            for (fText of findText){
+            let fText; // в этой переменной будут находиться значения из findText
+            let found = {}; // здесь будут находиться значения такого вида: fText: index
+
+            for (fText of findText){ // заполняем found 
                 firstIndex = questionObject.question_text.indexOf(fText);
                 if (firstIndex != -1){
-                    break;
+                    // Добавляем значения если находим в тексте вопроса что-либо из findText. 
+                    found[fText] = firstIndex;
                 }
             }
-            slice = questionObject.question_text.slice(0, firstIndex);
+
+            firstIndex = Math.min(...Object.values(found)); // минимальным значением будет первое вхождение 
+            // чего-либо из findText в строку вопроса
+
+            for (let x in found){ // находим ключ из found с минимальным значением (firstIndex)
+                if (found[x] == firstIndex){
+                    fText = x;
+                }
+            }
+
+            slice = questionObject.question_text.slice(0, firstIndex); // срез строки вопроса 
+            // до первого вхождения fText 
             answerString += slice;
-            console.log(fText);
             switch (fText){
                 case "{missed}":
                     answerString += `<div class="missed-word">${word}</div>`;
@@ -856,9 +868,8 @@ class InsertWordsQuestion extends Question {
             questionObject.question_text = questionObject.question_text.slice(firstIndex + fText.length);
 
         }
-        slice = questionObject.question_text.slice(0);
-        answerString += slice;
-
+        
+        answerString += questionObject.question_text; // добавляем в строку ответа оставшуюся часть вопроса
         this.question_preview.innerHTML = answerString.replace(/(\r\n|\n|\r)/g, "<br/>");
     }
 
