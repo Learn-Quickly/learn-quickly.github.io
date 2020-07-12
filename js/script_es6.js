@@ -882,7 +882,7 @@ class InsertWordsQuestion extends Question {
 
 
     static removeOddOut(str){
-        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-|[\r\n]+|&)/g, ' ');
+        str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|( - )|[\r\n]+|&)/g, ' ');
         str = str.replace(/\s{2,}/g, ' ');
         return str;
     }   

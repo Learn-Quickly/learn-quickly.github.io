@@ -1289,7 +1289,7 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
   }], [{
     key: "removeOddOut",
     value: function removeOddOut(str) {
-      str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|-|[\r\n]+|&)/g, ' ');
+      str = str.replace(/(,|\.|!|\?|"|'|\(|\)|;|:|( - )|[\r\n]+|&)/g, ' ');
       str = str.replace(/\s{2,}/g, ' ');
       return str;
     }
