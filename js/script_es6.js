@@ -255,26 +255,13 @@ class EnterAnswerQuestion extends Question {
                             <textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>
                         </div>`);
         this.question_body = htmlToElement(`<div class="row justify-content-center">
-                            <input class="col-7" id="one_variant_input" type="text" placeholder="Введите текст ответа" onchange="fourthTypeQuestion.validateAnswerInput();"/>
+                            <input class="col-7" id="one_variant_input" type="text" placeholder="Введите текст ответа"/>
                         </div>`);
 
         this.question_div.appendChild(this.question_body);
 
         this.question_textarea = this.question_header.getElementsByClassName("question_textarea")[0];
         this.answer_input = this.question_body.firstChild.nextSibling;
-    }
-
-    validateAnswerInput(){
-        // let answer_string = this.answer_input.value.trim();
-        // this.answer_input.value = answer_string;
-        // if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
-        //     this.answer_input.style.borderColor = "#f44336";
-        //     return false;
-        // } else {
-        //     this.answer_input.style.borderColor = "#757575";
-        //     return true;
-        // }
-        return true;
     }
 
     getAnswer(){
@@ -295,10 +282,6 @@ class EnterAnswerQuestion extends Question {
         
         if (questionObject.sessions.length == 0){
             return "Выберите одну или несколько сессий";
-        }
-
-        if (!this.validateAnswerInput()) {
-            return "Ответ должен состоять из одного слова"
         }
 
         return JSON.stringify(questionObject);
@@ -386,19 +369,6 @@ class Word {
         this.letters = [];
 
         this.div = htmlToElement(`<div class="word-wrap">${this.text}</div>`);
-        // this.div.addEventListener("click", e => {
-        //     let word = this.getWordByDiv(e.target);
-        //     if (word == null) {
-        //         word = this.getWordByDiv(e.target.parentNode);
-        //     }
-        //     if (word.selected){
-        //         word.selected = false;
-        //     } else {
-        //         word.selected = true;
-        //     }
-        //     word.render();
-        //     this.parentQuestion.renderPreview();
-        // });
         this.selectedAs = {"as": "nothing"};
     }
 
@@ -429,12 +399,6 @@ class Word {
     }
 
     render(){
-        // if (this.selected){
-        //     this.div.classList.add("word-wrap-selected");
-        // } else {
-        //     this.div.classList.remove("word-wrap-selected");
-        // }
-        // console.log(this.selectedAs);
         switch (this.selectedAs.as){
             case "nothing":
                 this.div.style.backgroundColor = "rgba(0, 0, 0, 0)";
@@ -451,13 +415,6 @@ class Word {
     }
 
     select(callback){
-        // let word = this.getWordByDiv(this);
-        // if (word.selected){
-        //     word.selected = false;
-        // } else {
-        //     word.selected = true;
-        // }
-        // word.render();
         this.parentQuestion.select(callback);
     }
 
@@ -612,16 +569,6 @@ class SelectMixWord extends SelectorStrategy {
 class InsertWordsQuestion extends Question {
     type = 5;
 
-    // insertTypes = { // designation of selected object in json
-    //     "letter": {
-    //         "missed": "{square}"
-    //     },  
-    //     "word": {
-    //         "missed": "{missed}",
-    //         "mixed": "{missed}"
-    //     }
-    // };
-
     static get insertTypes(){
         return { // designation of selected object in json
             "letter": {
@@ -705,13 +652,6 @@ class InsertWordsQuestion extends Question {
     }
 
     getAnswer(){
-        // let answers = [];
-        // for (let word of this.words_list){
-        //     if (word.selected){
-        //         answers.push(word.text);
-        //     }
-        // }
-        // return answers;
         let answer = {
             "variant1": {
                 "missed": [],
