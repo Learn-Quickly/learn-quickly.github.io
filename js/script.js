@@ -40,7 +40,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var alphabet = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ";
 var question_type = document.getElementById("question_variants");
 var question_header = document.getElementById("question_header");
 var variative = document.getElementById("variative");
@@ -68,110 +67,127 @@ var Question = /*#__PURE__*/function () {
   return Question;
 }();
 
+var FirstTypeVariant = /*#__PURE__*/function () {
+  function FirstTypeVariant(parentQuestion) {
+    var _this = this;
+
+    _classCallCheck(this, FirstTypeVariant);
+
+    this.parentQuestion = parentQuestion;
+    this.div = htmlToElement("<div class=\"row mt-3\">\n                                        <input type=\"radio\" name=\"true_answer\" value=\"\" class=\"align-self-center mr-3 true_answer\">\n                                        <div class=\"card col-11\">\n                                            <div class=\"card-body\">\n                                                <div class=\"row\">\n                                                    <div class=\"col-6\">\n                                                        <input class=\"answer-variant\" type=\"text\" name=\"answer_text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\">\n                                                    </div>\n                                                    <div class=\"ml-auto col-2\">\n                                                        <button name=\"delete_button\" type=\"button\" class=\"btn btn-danger\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>");
+    this.div.querySelectorAll('[name=delete_button]')[0].addEventListener('click', function (e) {
+      _this.parentQuestion.deleteVariant(_this);
+    });
+    this.radiobutton = this.div.firstChild.nextSibling;
+    this.variantInput = this.div.querySelectorAll('[name=answer_text]')[0];
+    this.variantInput.addEventListener('keyup', function (e) {
+      _this.parentQuestion.renderPreview();
+    });
+    this.radiobutton.addEventListener('click', function (e) {
+      _this.parentQuestion.renderPreview();
+    });
+  }
+
+  _createClass(FirstTypeVariant, [{
+    key: "selected",
+    get: function get() {
+      return this.radiobutton.checked;
+    }
+  }, {
+    key: "text",
+    get: function get() {
+      return this.variantInput.value;
+    }
+  }]);
+
+  return FirstTypeVariant;
+}();
+
 var OneChooseQuestion = /*#__PURE__*/function (_Question) {
   _inherits(OneChooseQuestion, _Question);
 
   var _super = _createSuper(OneChooseQuestion);
 
   function OneChooseQuestion() {
-    var _this;
+    var _this2;
 
     _classCallCheck(this, OneChooseQuestion);
 
-    _this = _super.call(this);
+    _this2 = _super.call(this);
 
-    _defineProperty(_assertThisInitialized(_this), "type", 1);
+    _defineProperty(_assertThisInitialized(_this2), "type", 1);
 
-    _this.question_div = document.createElement('div');
-    _this.question_header = htmlToElement("<textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>");
-    _this.question_body = htmlToElement("<div class=\"row\">\n                        <h4 class=\"col-3\">\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B \u043E\u0442\u0432\u0435\u0442\u043E\u0432</h4>\n                        <div class=\"col-4\"><button class=\"btn btn-success\" onclick=\"firstTypeQuestion.add_variant();\" id=\"add_one_choose_variant\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\u0430\u0440\u0438\u0430\u043D\u0442</button></div>\n                    </div>");
-    _this.variants_node = htmlToElement('<div class="container" id="variants"></div>');
+    _this2.question_div = document.createElement('div');
+    _this2.question_header = htmlToElement("<textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>");
+    _this2.question_body = htmlToElement("<div class=\"row\">\n                        <h4 class=\"col-3\">\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B \u043E\u0442\u0432\u0435\u0442\u043E\u0432</h4>\n                        <div class=\"col-4\"><button class=\"btn btn-success\" id=\"add_one_choose_variant\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\u0430\u0440\u0438\u0430\u043D\u0442</button></div>\n                    </div>");
+    _this2.variants_node = htmlToElement('<div class="container" id="variants"></div>');
+    _this2.question_preview_part = htmlToElement("<div class=\"container\"><div class=\"row mt-3 justify-content-center\"><h2>\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440:</h1></div>\n                        <div class=\"row mt-3 justify-content-center\">\n                            <div class=\"card col-11\"><div class=\"card-body\" id=\"question1_preview\"></div></div>\n                        </div></div>");
 
-    _this.question_div.appendChild(_this.question_body);
+    _this2.question_div.appendChild(_this2.question_body);
 
-    _this.question_div.appendChild(_this.variants_node);
+    _this2.question_div.appendChild(_this2.variants_node);
 
-    _this.question_textarea = _this.question_header;
-    _this.variant_divs = {};
-    _this.variants_count = 0;
+    _this2.question_div.appendChild(_this2.question_preview_part);
+
+    _this2.question_preview = _this2.question_preview_part.querySelector("#question1_preview");
+    _this2.question_textarea = _this2.question_header;
+
+    _this2.question_textarea.addEventListener('keyup', function (e) {
+      _this2.renderPreview();
+    });
+
+    _this2.variant_divs = {};
+    _this2.variants_count = 0;
+    _this2.variants = [];
+
+    _this2.question_body.firstChild.nextSibling.nextSibling.nextSibling.firstChild.addEventListener('click', function (e) {
+      _this2.add_variant(e);
+    });
 
     for (var i = 0; i < 2; i++) {
-      _this.add_variant();
+      _this2.add_variant();
     }
 
-    return _this;
+    return _this2;
   }
 
   _createClass(OneChooseQuestion, [{
     key: "add_variant",
-    value: function add_variant() {
-      if (this.variants_count > 32) {
-        return null;
-      }
-
-      var variant_name = alphabet[this.variants_count++];
-      var uuid = uuidv4();
-      var div = htmlToElement("<div class=\"row mt-3\">\n                                        <input type=\"radio\" name=\"true_answer\" value=\"".concat(uuid, "\" class=\"align-self-center mr-3 true_answer\">\n                                        <div class=\"align-self-center variant mr-3\">").concat(variant_name, "</div>\n                                        <div class=\"card col-11\">\n                                            <div class=\"card-body\">\n                                                <div class=\"row\">\n                                                    <div class=\"col-6\">\n                                                        <input class=\"answer-variant answer-variant-").concat(uuid, "\" type=\"text\" name=\"answer_text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\">\n                                                    </div>\n                                                    <div class=\"ml-auto col-2\">\n                                                        <button type=\"button\" class=\"btn btn-danger\" onclick=\"firstTypeQuestion.deleteVariant('").concat(uuid, "')\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>"));
-      this.variant_divs[uuid] = div;
+    value: function add_variant(e) {
+      this.variants.push(new FirstTypeVariant(this));
       this.renderVariants();
     }
   }, {
     key: "deleteVariant",
-    value: function deleteVariant(uuid) {
-      if (this.getVariantNodes().length <= 2) {
+    value: function deleteVariant(variant) {
+      if (this.variants.length <= 2) {
         return null;
       }
 
-      this.variants_count--;
-      delete this.variant_divs[uuid];
+      this.variants.splice(this.variants.indexOf(variant), 1);
       this.renderVariants();
     }
   }, {
     key: "getVariants",
     value: function getVariants() {
-      var variants = [];
-
-      for (var uuid in this.variant_divs) {
-        var div = this.variant_divs[uuid];
-        var input = div.getElementsByClassName("answer-variant-".concat(uuid))[0];
-        var variant_name = div.getElementsByClassName("variant")[0].innerHTML;
-        var variant = {
-          "variant_letter": variant_name,
-          "variant_text": input.value
+      return this.variants.map(function (variant) {
+        return {
+          "variant_text": variant.text
         };
-        variants.push(variant);
-      }
-
-      return variants;
-    }
-  }, {
-    key: "getVariantNodes",
-    value: function getVariantNodes() {
-      var nodes = [];
-      var letter_counter = 0;
-
-      for (var uuid in this.variant_divs) {
-        var div = this.variant_divs[uuid];
-        div.getElementsByClassName("variant")[0].innerHTML = alphabet[letter_counter++];
-        nodes.push(div);
-        this.variant_divs[uuid] = div;
-      }
-
-      return nodes;
+      });
     }
   }, {
     key: "renderVariants",
     value: function renderVariants() {
-      var variants = this.getVariantNodes();
       this.variants_node.innerHTML = '';
 
-      var _iterator = _createForOfIteratorHelper(variants),
+      var _iterator = _createForOfIteratorHelper(this.variants),
           _step;
 
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var div = _step.value;
-          this.variants_node.appendChild(div);
+          var variant = _step.value;
+          this.variants_node.appendChild(variant.div);
         }
       } catch (err) {
         _iterator.e(err);
@@ -182,24 +198,10 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
   }, {
     key: "getAnswer",
     value: function getAnswer() {
-      var radios = this.variants_node.getElementsByClassName("true_answer");
-
-      var _iterator2 = _createForOfIteratorHelper(radios),
-          _step2;
-
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var radio = _step2.value;
-
-          if (radio.checked) {
-            var uuid = radio.value;
-            return this.variant_divs[uuid].getElementsByClassName("variant")[0].innerHTML;
-          }
+      for (var i in this.variants) {
+        if (this.variants[i].selected) {
+          return parseInt(i);
         }
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
       }
     }
   }, {
@@ -221,21 +223,60 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
         return "Введите текст вопроса";
       }
 
-      if (this.getVariantNodes().length < 2) {
+      if (this.variants.length < 2) {
         return "Добавьте минимум 2 варианта ответа";
       }
 
-      for (var variant in questionObject.variants) {
-        if (!questionObject.variants[variant]) {
-          return "\u0412\u0430\u0440\u0438\u0430\u043D\u0442 ".concat(variant, " \u043F\u0443\u0441\u0442\u043E\u0439");
+      var _iterator2 = _createForOfIteratorHelper(questionObject.variants),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var variant = _step2.value;
+
+          if (!variant.variant_text) {
+            return "\u0412\u044B \u0437\u0430\u043F\u043E\u043B\u043D\u0438\u043B\u0438 \u043D\u0435 \u0432\u0441\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442\u044B";
+          }
         }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
       }
 
-      if (!questionObject.answer) {
+      if (questionObject.answer == undefined) {
         return "Укажите правильный ответ";
       }
 
       return JSON.stringify(questionObject);
+    }
+  }, {
+    key: "renderPreview",
+    value: function renderPreview() {
+      var json = this.toJson();
+      var questionObject;
+
+      try {
+        questionObject = JSON.parse(json);
+      } catch (SyntaxError) {
+        this.question_preview.innerHTML = json;
+        return false;
+      }
+
+      var previewString = "";
+
+      for (var i in questionObject.variants) {
+        var variant = questionObject.variants[i];
+
+        if (i == questionObject.answer) {
+          previewString += "<div class=\"row col-12 mb-3\" id=\"question1_preview_item\">\n                            <div class=\"col-1\">\n                                <span class=\"variant-first-question variant-first-question-selected\"></span>\n                            </div>\n                            <span class=\"col-5 ml-3\">".concat(variant.variant_text, "</span>\n                            </div>");
+        } else {
+          previewString += "<div class=\"row col-12 mb-3\" id=\"question1_preview_item\">\n                            <div class=\"col-1\">\n                                <span class=\"variant-first-question\"></span>\n                            </div>\n                            <span class=\"col-5 ml-3\">".concat(variant.variant_text, "</span>\n                            </div>");
+        }
+      }
+
+      this.question_preview.innerHTML = previewString;
+      renderJson();
     }
   }]);
 
@@ -248,38 +289,38 @@ var EnterAnswerQuestion = /*#__PURE__*/function (_Question2) {
   var _super2 = _createSuper(EnterAnswerQuestion);
 
   function EnterAnswerQuestion() {
-    var _this2;
+    var _this3;
 
     _classCallCheck(this, EnterAnswerQuestion);
 
-    _this2 = _super2.call(this);
+    _this3 = _super2.call(this);
 
-    _defineProperty(_assertThisInitialized(_this2), "type", 4);
+    _defineProperty(_assertThisInitialized(_this3), "type", 4);
 
-    _this2.question_div = document.createElement('div');
-    _this2.question_header = htmlToElement("<div class=\"col-11\">\n                            <textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>\n                        </div>");
-    _this2.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <input class=\"col-7\" id=\"one_variant_input\" type=\"text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\" onchange=\"fourthTypeQuestion.validateAnswerInput();\"/>\n                        </div>");
+    _this3.question_div = document.createElement('div');
+    _this3.question_header = htmlToElement("<div class=\"col-11\">\n                            <textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>\n                        </div>");
+    _this3.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <input class=\"col-7\" id=\"one_variant_input\" type=\"text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\" onchange=\"fourthTypeQuestion.validateAnswerInput();\"/>\n                        </div>");
 
-    _this2.question_div.appendChild(_this2.question_body);
+    _this3.question_div.appendChild(_this3.question_body);
 
-    _this2.question_textarea = _this2.question_header.getElementsByClassName("question_textarea")[0];
-    _this2.answer_input = _this2.question_body.firstChild.nextSibling;
-    return _this2;
+    _this3.question_textarea = _this3.question_header.getElementsByClassName("question_textarea")[0];
+    _this3.answer_input = _this3.question_body.firstChild.nextSibling;
+    return _this3;
   }
 
   _createClass(EnterAnswerQuestion, [{
     key: "validateAnswerInput",
     value: function validateAnswerInput() {
-      var answer_string = this.answer_input.value.trim();
-      this.answer_input.value = answer_string;
-
-      if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
-        this.answer_input.style.borderColor = "#f44336";
-        return false;
-      } else {
-        this.answer_input.style.borderColor = "#757575";
-        return true;
-      }
+      // let answer_string = this.answer_input.value.trim();
+      // this.answer_input.value = answer_string;
+      // if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
+      //     this.answer_input.style.borderColor = "#f44336";
+      //     return false;
+      // } else {
+      //     this.answer_input.style.borderColor = "#757575";
+      //     return true;
+      // }
+      return true;
     }
   }, {
     key: "getAnswer",
@@ -324,7 +365,7 @@ var Letter = /*#__PURE__*/function () {
   }]);
 
   function Letter(parentWord) {
-    var _this3 = this;
+    var _this4 = this;
 
     var letter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 
@@ -334,12 +375,12 @@ var Letter = /*#__PURE__*/function () {
     this._letter = letter;
     this.div = htmlToElement("<div class=\"word-letter\">".concat(this.letter, "</div>"));
     this.div.addEventListener('click', function (e) {
-      _this3.parentWord.select({
+      _this4.parentWord.select({
         "event": e,
-        "letter": _this3
+        "letter": _this4
       });
 
-      _this3.parentWord.parentQuestion.renderPreview();
+      _this4.parentWord.parentQuestion.renderPreview();
     });
     this.selectedAs = {
       "as": "nothing"
@@ -866,42 +907,42 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
   }]);
 
   function InsertWordsQuestion(palette) {
-    var _this4;
+    var _this5;
 
     _classCallCheck(this, InsertWordsQuestion);
 
-    _this4 = _super6.call(this);
+    _this5 = _super6.call(this);
 
-    _defineProperty(_assertThisInitialized(_this4), "type", 5);
+    _defineProperty(_assertThisInitialized(_this5), "type", 5);
 
-    _this4.question_div = document.createElement('div');
-    _this4.question_header = htmlToElement("<div class=\"col-10 input-div mt-5\" id=\"div_input\" contenteditable=true placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\"></div>");
-    _this4.palette = palette;
-    _this4.question_body = htmlToElement("<div class=\"row justify-content-center\"> \n                            <div class=\"container\"></div>\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
+    _this5.question_div = document.createElement('div');
+    _this5.question_header = htmlToElement("<div class=\"col-10 input-div mt-5\" id=\"div_input\" contenteditable=true placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\"></div>");
+    _this5.palette = palette;
+    _this5.question_body = htmlToElement("<div class=\"row justify-content-center\"> \n                            <div class=\"container\"></div>\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
 
-    _this4.question_body.firstChild.nextSibling.appendChild(_this4.palette.div);
+    _this5.question_body.firstChild.nextSibling.appendChild(_this5.palette.div);
 
-    _this4.question_preview_part = htmlToElement("<div class=\"container\"><div class=\"row mt-3 justify-content-center\"><h2>\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440:</h1></div>\n                        <div class=\"row mt-3 justify-content-center\">\n                            <div class=\"col-11\" id=\"question_example\"></div>\n                        </div></div>");
-    _this4.question_preview = _this4.question_preview_part.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
+    _this5.question_preview_part = htmlToElement("<div class=\"container\"><div class=\"row mt-3 justify-content-center\"><h2>\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440:</h1></div>\n                        <div class=\"row mt-3 justify-content-center\">\n                            <div class=\"col-11\" id=\"question_example\"></div>\n                        </div></div>");
+    _this5.question_preview = _this5.question_preview_part.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
 
-    _this4.question_div.appendChild(_this4.question_body);
+    _this5.question_div.appendChild(_this5.question_body);
 
-    _this4.question_div.appendChild(_this4.question_preview_part);
+    _this5.question_div.appendChild(_this5.question_preview_part);
 
-    _this4.words_list = [];
-    _this4.div_input = _this4.question_header;
+    _this5.words_list = [];
+    _this5.div_input = _this5.question_header;
 
-    _this4.div_input.addEventListener('keyup', function (e) {
-      var change = _this4.compareWords(); // console.log(change);
+    _this5.div_input.addEventListener('keyup', function (e) {
+      var change = _this5.compareWords(); // console.log(change);
 
 
-      _this4.processChange(change);
+      _this5.processChange(change);
 
-      _this4.renderPreview();
+      _this5.renderPreview();
     });
 
-    _this4.words_show_div = _this4.question_div.firstChild.firstChild.nextSibling.nextSibling.nextSibling;
-    return _this4;
+    _this5.words_show_div = _this5.question_div.firstChild.firstChild.nextSibling.nextSibling.nextSibling;
+    return _this5;
   }
 
   _createClass(InsertWordsQuestion, [{
@@ -1279,6 +1320,7 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
       answerString += questionObject.question_text; // добавляем в строку ответа оставшуюся часть вопроса
 
       this.question_preview.innerHTML = answerString.replace(/(\r\n|\n|\r)/g, "<br/>");
+      renderJson();
     }
   }, {
     key: "select",
