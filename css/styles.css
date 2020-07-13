@@ -218,13 +218,13 @@ textarea:focus {
 .variant-first-question {
     width: 20px !important;
     height: 20px !important;
-    border: 2px solid #999999;
+    border: 2px solid #FF7676;
     border-radius: 100%;
     padding-right: 18px;
 }
 
 .variant-first-question-selected {
-    background-color: #46c2ff;
-    border-color: #46c2ff;
+    background-color: #1c941c;
+    border-color: #1c941c;
 }
 

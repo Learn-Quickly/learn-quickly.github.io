@@ -99,17 +99,14 @@ class SecondTypeVariant {
     }
 }
 
-
-class OneChooseQuestion extends Question {
-    type = 1;
-
-    constructor(){
+class ChooseQuestion extends Question {
+    constructor() {
         super();
         this.question_div = document.createElement('div');
         this.question_header = htmlToElement(`<textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>`);
         this.question_body = htmlToElement(`<div class="row">
                         <h4 class="col-3">Варианты ответов</h4>
-                        <div class="col-4"><button class="btn btn-success" id="add_one_choose_variant">Добавить вариант</button></div>
+                        <div class="col-4"><button class="btn btn-success" id="add_variant_btn">Добавить вариант</button></div>
                     </div>`);
         this.variants_node = htmlToElement('<div class="container" id="variants"></div>');
 
@@ -133,18 +130,13 @@ class OneChooseQuestion extends Question {
 
         this.variants = []
 
-        this.question_body.firstChild.nextSibling.nextSibling.nextSibling.firstChild.addEventListener('click', e => {
+        this.question_body.querySelectorAll('#add_variant_btn')[0].addEventListener('click', e => {
             this.add_variant(e);
         });
 
         for (let i = 0; i < 2; i++) {
             this.add_variant();
         }
-    }
-
-    add_variant(e){
-        this.variants.push(new FirstTypeVariant(this));
-        this.renderVariants();
     }
 
     deleteVariant(variant){
@@ -168,6 +160,15 @@ class OneChooseQuestion extends Question {
         for (let variant of this.variants) {
             this.variants_node.appendChild(variant.div);
         }
+    }
+}
+
+class OneChooseQuestion extends ChooseQuestion {
+    type = 1;
+
+    add_variant(e){
+        this.variants.push(new FirstTypeVariant(this));
+        this.renderVariants();
     }
 
     getAnswer(){
@@ -225,18 +226,18 @@ class OneChooseQuestion extends Question {
         }
 
         let previewString = "";
-        previewString += `<div class="row col-12 justify-content-center"><h2>${questionObject.question_text}</h2></div>`;
+
         for (let i in questionObject.variants){
             let variant = questionObject.variants[i];
             if (i == questionObject.answer){
-                previewString += `<div class="row col-12 mt-3">
+                previewString += `<div class="row col-12 mb-3" id="question1_preview_item">
                             <div class="col-1">
                                 <span class="variant-first-question variant-first-question-selected"></span>
                             </div>
                             <span class="col-5 ml-3">${variant.variant_text}</span>
                             </div>`
             } else {
-                previewString += `<div class="row col-12 mt-3">
+                previewString += `<div class="row col-12 mb-3" id="question1_preview_item">
                             <div class="col-1">
                                 <span class="variant-first-question"></span>
                             </div>
@@ -251,61 +252,12 @@ class OneChooseQuestion extends Question {
 }
 
 
-class MultipleChoiceQuestion extends Question {
+class MultipleChoiceQuestion extends ChooseQuestion {
     type = 2;
-
-    constructor() {
-        super();
-        this.question_div = document.createElement('div');
-        this.question_header = htmlToElement(`<textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>`);
-        this.question_body = htmlToElement(`<div class="row">
-                        <h4 class="col-3">Варианты ответов</h4>
-                        <div class="col-4"><button class="btn btn-success" id="add_multiple_variant">Добавить вариант</button></div>
-                    </div>`);
-        this.variants_node = htmlToElement('<div class="container" id="variants"></div>');
-
-        this.question_div.appendChild(this.question_body);
-        this.question_div.appendChild(this.variants_node);
-
-        this.question_textarea = this.question_header;
-
-        this.variants = []
-
-        this.question_body.firstChild.nextSibling.nextSibling.nextSibling.firstChild.addEventListener('click', e => {
-            this.add_variant(e);
-        });
-
-        for (let i = 0; i < 2; i++) {
-            this.add_variant();
-        }
-    }
 
     add_variant() {
         this.variants.push(new SecondTypeVariant(this));
         this.renderVariants();
-    }
-
-    deleteVariant(variant){
-        if (this.variants.length <= 2){
-            return null;
-        }
-        this.variants.splice(this.variants.indexOf(variant), 1);
-        this.renderVariants();
-    }
-
-    getVariants(){
-        return this.variants.map(variant => {
-            return {
-                "variant_text": variant.text
-            }
-        });
-    }
-
-    renderVariants(){
-        this.variants_node.innerHTML = '';
-        for (let variant of this.variants) {
-            this.variants_node.appendChild(variant.div);
-        }
     }
 
     getAnswers(){
@@ -326,7 +278,6 @@ class MultipleChoiceQuestion extends Question {
             "variants": this.getVariants(),
             "answers": this.getAnswers(),
         }
-        questionObject['chlen'] = 3333;
 
         if (questionObject.sessions.length == 0){
             return "Выберите одну или несколько сессий";
@@ -365,26 +316,13 @@ class EnterAnswerQuestion extends Question {
                             <textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>
                         </div>`);
         this.question_body = htmlToElement(`<div class="row justify-content-center">
-                            <input class="col-7" id="one_variant_input" type="text" placeholder="Введите текст ответа" onchange="fourthTypeQuestion.validateAnswerInput();"/>
+                            <input class="col-7" id="one_variant_input" type="text" placeholder="Введите текст ответа"/>
                         </div>`);
 
         this.question_div.appendChild(this.question_body);
 
         this.question_textarea = this.question_header.getElementsByClassName("question_textarea")[0];
         this.answer_input = this.question_body.firstChild.nextSibling;
-    }
-
-    validateAnswerInput(){
-        // let answer_string = this.answer_input.value.trim();
-        // this.answer_input.value = answer_string;
-        // if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
-        //     this.answer_input.style.borderColor = "#f44336";
-        //     return false;
-        // } else {
-        //     this.answer_input.style.borderColor = "#757575";
-        //     return true;
-        // }
-        return true;
     }
 
     getAnswer(){
@@ -405,10 +343,6 @@ class EnterAnswerQuestion extends Question {
         
         if (questionObject.sessions.length == 0){
             return "Выберите одну или несколько сессий";
-        }
-
-        if (!this.validateAnswerInput()) {
-            return "Ответ должен состоять из одного слова"
         }
 
         return JSON.stringify(questionObject);
@@ -496,19 +430,6 @@ class Word {
         this.letters = [];
 
         this.div = htmlToElement(`<div class="word-wrap">${this.text}</div>`);
-        // this.div.addEventListener("click", e => {
-        //     let word = this.getWordByDiv(e.target);
-        //     if (word == null) {
-        //         word = this.getWordByDiv(e.target.parentNode);
-        //     }
-        //     if (word.selected){
-        //         word.selected = false;
-        //     } else {
-        //         word.selected = true;
-        //     }
-        //     word.render();
-        //     this.parentQuestion.renderPreview();
-        // });
         this.selectedAs = {"as": "nothing"};
     }
 
@@ -539,12 +460,6 @@ class Word {
     }
 
     render(){
-        // if (this.selected){
-        //     this.div.classList.add("word-wrap-selected");
-        // } else {
-        //     this.div.classList.remove("word-wrap-selected");
-        // }
-        // console.log(this.selectedAs);
         switch (this.selectedAs.as){
             case "nothing":
                 this.div.style.backgroundColor = "rgba(0, 0, 0, 0)";
@@ -561,13 +476,6 @@ class Word {
     }
 
     select(callback){
-        // let word = this.getWordByDiv(this);
-        // if (word.selected){
-        //     word.selected = false;
-        // } else {
-        //     word.selected = true;
-        // }
-        // word.render();
         this.parentQuestion.select(callback);
     }
 
@@ -722,16 +630,6 @@ class SelectMixWord extends SelectorStrategy {
 class InsertWordsQuestion extends Question {
     type = 5;
 
-    // insertTypes = { // designation of selected object in json
-    //     "letter": {
-    //         "missed": "{square}"
-    //     },  
-    //     "word": {
-    //         "missed": "{missed}",
-    //         "mixed": "{missed}"
-    //     }
-    // };
-
     static get insertTypes(){
         return { // designation of selected object in json
             "letter": {
@@ -815,13 +713,6 @@ class InsertWordsQuestion extends Question {
     }
 
     getAnswer(){
-        // let answers = [];
-        // for (let word of this.words_list){
-        //     if (word.selected){
-        //         answers.push(word.text);
-        //     }
-        // }
-        // return answers;
         let answer = {
             "variant1": {
                 "missed": [],
