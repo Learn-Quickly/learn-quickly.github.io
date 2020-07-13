@@ -23,7 +23,10 @@ class FirstTypeVariant {
     constructor(parentQuestion){
         this.parentQuestion = parentQuestion;
         this.div = htmlToElement(`<div class="row mt-3">
-                                        <input type="radio" name="true_answer" value="" class="align-self-center mr-3 true_answer">
+                                        <input type="radio" name="true_answer" value="" class="align-self-center mr-3 true_answer" style="
+    height: 25px;
+    width: 25px;
+">
                                         <div class="card col-11">
                                             <div class="card-body">
                                                 <div class="row">
@@ -190,18 +193,18 @@ class OneChooseQuestion extends Question {
         }
 
         let previewString = "";
-
+        previewString += `<div class="row col-12 justify-content-center"><h2>${questionObject.question_text}</h2></div>`;
         for (let i in questionObject.variants){
             let variant = questionObject.variants[i];
             if (i == questionObject.answer){
-                previewString += `<div class="row col-12 mb-3" id="question1_preview_item">
+                previewString += `<div class="row col-12 mt-3">
                             <div class="col-1">
                                 <span class="variant-first-question variant-first-question-selected"></span>
                             </div>
                             <span class="col-5 ml-3">${variant.variant_text}</span>
                             </div>`
             } else {
-                previewString += `<div class="row col-12 mb-3" id="question1_preview_item">
+                previewString += `<div class="row col-12 mt-3">
                             <div class="col-1">
                                 <span class="variant-first-question"></span>
                             </div>
