@@ -184,15 +184,16 @@ class EnterAnswerQuestion extends Question {
     }
 
     validateAnswerInput(){
-        let answer_string = this.answer_input.value.trim();
-        this.answer_input.value = answer_string;
-        if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
-            this.answer_input.style.borderColor = "#f44336";
-            return false;
-        } else {
-            this.answer_input.style.borderColor = "#757575";
-            return true;
-        }
+        // let answer_string = this.answer_input.value.trim();
+        // this.answer_input.value = answer_string;
+        // if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
+        //     this.answer_input.style.borderColor = "#f44336";
+        //     return false;
+        // } else {
+        //     this.answer_input.style.borderColor = "#757575";
+        //     return true;
+        // }
+        return true;
     }
 
     getAnswer(){
