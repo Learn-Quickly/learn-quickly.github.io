@@ -42,6 +42,14 @@ class FirstTypeVariant {
         });
         this.radiobutton = this.div.firstChild.nextSibling;
         this.variantInput = this.div.querySelectorAll('[name=answer_text]')[0]
+
+        this.variantInput.addEventListener('keyup', e => {
+            this.parentQuestion.renderPreview();
+        });
+
+        this.radiobutton.addEventListener('click', e => {
+            this.parentQuestion.renderPreview();
+        });
     }
 
     get selected(){
@@ -99,10 +107,23 @@ class ChooseQuestion extends Question {
                     </div>`);
         this.variants_node = htmlToElement('<div class="container" id="variants"></div>');
 
+        this.question_preview_part = htmlToElement(`<div class="container"><div class="row mt-3 justify-content-center"><h2>Предпросмотр:</h1></div>
+                        <div class="row mt-3 justify-content-center">
+                            <div class="card col-11"><div class="card-body" id="question1_preview"></div></div>
+                        </div></div>`);
+
         this.question_div.appendChild(this.question_body);
         this.question_div.appendChild(this.variants_node);
+        this.question_div.appendChild(this.question_preview_part);
+
+        this.question_preview = this.question_preview_part.querySelector("#question1_preview");
+
 
         this.question_textarea = this.question_header;
+        this.question_textarea.addEventListener('keyup', e => {
+            this.renderPreview();
+        });
+
 
         this.variants = []
 
@@ -187,6 +208,43 @@ class OneChooseQuestion extends ChooseQuestion {
         }
 
         return JSON.stringify(questionObject);
+    }
+
+    renderPreview(){
+        let json = this.toJson();
+
+        let questionObject;
+
+        try {
+            questionObject = JSON.parse(json);
+        } catch (SyntaxError) {
+            this.question_preview.innerHTML = json;
+            return false;
+        }
+
+        let previewString = "";
+
+        for (let i in questionObject.variants){
+            let variant = questionObject.variants[i];
+            if (i == questionObject.answer){
+                previewString += `<div class="row col-12 mb-3" id="question1_preview_item">
+                            <div class="col-1">
+                                <span class="variant-first-question variant-first-question-selected"></span>
+                            </div>
+                            <span class="col-5 ml-3">${variant.variant_text}</span>
+                            </div>`
+            } else {
+                previewString += `<div class="row col-12 mb-3" id="question1_preview_item">
+                            <div class="col-1">
+                                <span class="variant-first-question"></span>
+                            </div>
+                            <span class="col-5 ml-3">${variant.variant_text}</span>
+                            </div>`
+            }
+        }
+
+        this.question_preview.innerHTML = previewString;
+        renderJson();
     }
 }
 
@@ -893,6 +951,7 @@ class InsertWordsQuestion extends Question {
         
         answerString += questionObject.question_text; // добавляем в строку ответа оставшуюся часть вопроса
         this.question_preview.innerHTML = answerString.replace(/(\r\n|\n|\r)/g, "<br/>");
+        renderJson();
     }
 
 
