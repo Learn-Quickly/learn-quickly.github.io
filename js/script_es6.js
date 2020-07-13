@@ -65,6 +65,41 @@ class FirstTypeVariant {
 }
 
 
+class SecondTypeVariant {
+    constructor(parentQuestion){
+        this.parentQuestion = parentQuestion;
+        this.div = htmlToElement(`<div class="row mt-3">
+                                        <input type="checkbox" name="true_answer" value="" class="align-self-center mr-3 true_answer">
+                                        <div class="card col-11">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <input class="answer-variant" type="text" name="answer_text" placeholder="Введите вариант ответа">
+                                                    </div>
+                                                    <div class="ml-auto col-2">
+                                                        <button name="delete_button" type="button" class="btn btn-danger">Удалить</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`);
+        this.div.querySelectorAll('[name=delete_button]')[0].addEventListener('click', e => {
+            this.parentQuestion.deleteVariant(this);
+        });
+        this.checkbox = this.div.firstChild.nextSibling;
+        this.variantInput = this.div.querySelectorAll('[name=answer_text]')[0]
+    }
+
+    get selected(){
+        return this.checkbox.checked;
+    }
+
+    get text(){
+        return this.variantInput.value;
+    }
+}
+
+
 class OneChooseQuestion extends Question {
     type = 1;
 
@@ -95,9 +130,6 @@ class OneChooseQuestion extends Question {
             this.renderPreview();
         });
 
-
-        this.variant_divs = {};
-        this.variants_count = 0;
 
         this.variants = []
 
@@ -215,6 +247,110 @@ class OneChooseQuestion extends Question {
 
         this.question_preview.innerHTML = previewString;
         renderJson();
+    }
+}
+
+
+class MultipleChoiceQuestion extends Question {
+    type = 2;
+
+    constructor() {
+        super();
+        this.question_div = document.createElement('div');
+        this.question_header = htmlToElement(`<textarea class="col-11 mt-5 ml-3 question_textarea" name="question_text" id="question_text" placeholder="Ввведите текст вопроса" row="4"></textarea>`);
+        this.question_body = htmlToElement(`<div class="row">
+                        <h4 class="col-3">Варианты ответов</h4>
+                        <div class="col-4"><button class="btn btn-success" id="add_multiple_variant">Добавить вариант</button></div>
+                    </div>`);
+        this.variants_node = htmlToElement('<div class="container" id="variants"></div>');
+
+        this.question_div.appendChild(this.question_body);
+        this.question_div.appendChild(this.variants_node);
+
+        this.question_textarea = this.question_header;
+
+        this.variants = []
+
+        this.question_body.firstChild.nextSibling.nextSibling.nextSibling.firstChild.addEventListener('click', e => {
+            this.add_variant(e);
+        });
+
+        for (let i = 0; i < 2; i++) {
+            this.add_variant();
+        }
+    }
+
+    add_variant() {
+        this.variants.push(new SecondTypeVariant(this));
+        this.renderVariants();
+    }
+
+    deleteVariant(variant){
+        if (this.variants.length <= 2){
+            return null;
+        }
+        this.variants.splice(this.variants.indexOf(variant), 1);
+        this.renderVariants();
+    }
+
+    getVariants(){
+        return this.variants.map(variant => {
+            return {
+                "variant_text": variant.text
+            }
+        });
+    }
+
+    renderVariants(){
+        this.variants_node.innerHTML = '';
+        for (let variant of this.variants) {
+            this.variants_node.appendChild(variant.div);
+        }
+    }
+
+    getAnswers(){
+        let answers = []
+        for (let i in this.variants){
+            if (this.variants[i].selected){
+                answers.push(parseInt(i));
+            }
+        }
+        return answers;
+    }
+
+    toJson(){
+        let questionObject = {
+            "type": this.type,
+            "sessions": this.sessions,
+            "question_text": this.question_textarea.value.trim(),
+            "variants": this.getVariants(),
+            "answers": this.getAnswers(),
+        }
+        questionObject['chlen'] = 3333;
+
+        if (questionObject.sessions.length == 0){
+            return "Выберите одну или несколько сессий";
+        }
+
+        if (!questionObject.question_text){
+            return "Введите текст вопроса";
+        }
+
+        if (this.variants.length < 2){
+            return "Добавьте минимум 2 варианта ответа";
+        }
+
+        for (let variant of questionObject.variants){
+            if (!variant.variant_text){
+                return `Вы заполнили не все варианты`;
+            }
+        }
+
+        if (questionObject.answers == undefined){
+            return "Укажите правильный ответ";
+        }
+
+        return JSON.stringify(questionObject);
     }
 }
 
@@ -948,6 +1084,7 @@ class InsertWordsQuestion extends Question {
 
 
 const firstTypeQuestion = new OneChooseQuestion();
+const secondTypeQuestion = new MultipleChoiceQuestion();
 const fourthTypeQuestion = new EnterAnswerQuestion();
 
 const TransformationPaletteItems = [
@@ -967,7 +1104,7 @@ function getQuestionObject(){
             break;
         
         case 2:
-            question = firstTypeQuestion;
+            question = secondTypeQuestion;
             break;
         
         case 3:
