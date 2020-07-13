@@ -110,12 +110,18 @@ var SecondTypeVariant = /*#__PURE__*/function () {
     _classCallCheck(this, SecondTypeVariant);
 
     this.parentQuestion = parentQuestion;
-    this.div = htmlToElement("<div class=\"row mt-3\">\n                                        <input type=\"checkbox\" name=\"true_answer\" value=\"\" class=\"align-self-center mr-3 true_answer\">\n                                        <div class=\"card col-11\">\n                                            <div class=\"card-body\">\n                                                <div class=\"row\">\n                                                    <div class=\"col-6\">\n                                                        <input class=\"answer-variant\" type=\"text\" name=\"answer_text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\">\n                                                    </div>\n                                                    <div class=\"ml-auto col-2\">\n                                                        <button name=\"delete_button\" type=\"button\" class=\"btn btn-danger\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>");
+    this.div = htmlToElement("<div class=\"row mt-3\">\n                                        <input type=\"checkbox\" name=\"true_answer\" value=\"\" class=\"align-self-center mr-3 true_answer\" style=\"\n    width: 20px;\n    height: 20px;\n\">\n                                        <div class=\"card col-11\">\n                                            <div class=\"card-body\">\n                                                <div class=\"row\">\n                                                    <div class=\"col-6\">\n                                                        <input class=\"answer-variant\" type=\"text\" name=\"answer_text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\">\n                                                    </div>\n                                                    <div class=\"ml-auto col-2\">\n                                                        <button name=\"delete_button\" type=\"button\" class=\"btn btn-danger\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>");
     this.div.querySelectorAll('[name=delete_button]')[0].addEventListener('click', function (e) {
       _this2.parentQuestion.deleteVariant(_this2);
     });
     this.checkbox = this.div.firstChild.nextSibling;
     this.variantInput = this.div.querySelectorAll('[name=answer_text]')[0];
+    this.variantInput.addEventListener('keyup', function (e) {
+      _this2.parentQuestion.renderPreview();
+    });
+    this.checkbox.addEventListener('click', function (e) {
+      _this2.parentQuestion.renderPreview();
+    });
   }
 
   _createClass(SecondTypeVariant, [{
@@ -133,23 +139,20 @@ var SecondTypeVariant = /*#__PURE__*/function () {
   return SecondTypeVariant;
 }();
 
-var OneChooseQuestion = /*#__PURE__*/function (_Question) {
-  _inherits(OneChooseQuestion, _Question);
+var ChooseQuestion = /*#__PURE__*/function (_Question) {
+  _inherits(ChooseQuestion, _Question);
 
-  var _super = _createSuper(OneChooseQuestion);
+  var _super = _createSuper(ChooseQuestion);
 
-  function OneChooseQuestion() {
+  function ChooseQuestion() {
     var _this3;
 
-    _classCallCheck(this, OneChooseQuestion);
+    _classCallCheck(this, ChooseQuestion);
 
     _this3 = _super.call(this);
-
-    _defineProperty(_assertThisInitialized(_this3), "type", 1);
-
     _this3.question_div = document.createElement('div');
     _this3.question_header = htmlToElement("<textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>");
-    _this3.question_body = htmlToElement("<div class=\"row\">\n                        <h4 class=\"col-3\">\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B \u043E\u0442\u0432\u0435\u0442\u043E\u0432</h4>\n                        <div class=\"col-4\"><button class=\"btn btn-success\" id=\"add_one_choose_variant\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\u0430\u0440\u0438\u0430\u043D\u0442</button></div>\n                    </div>");
+    _this3.question_body = htmlToElement("<div class=\"row\">\n                        <h4 class=\"col-3\">\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B \u043E\u0442\u0432\u0435\u0442\u043E\u0432</h4>\n                        <div class=\"col-4\"><button class=\"btn btn-success\" id=\"add_variant_btn\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\u0430\u0440\u0438\u0430\u043D\u0442</button></div>\n                    </div>");
     _this3.variants_node = htmlToElement('<div class="container" id="variants"></div>');
     _this3.question_preview_part = htmlToElement("<div class=\"container\"><div class=\"row mt-3 justify-content-center\"><h2>\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440:</h1></div>\n                        <div class=\"row mt-3 justify-content-center\">\n                            <div class=\"card col-11\"><div class=\"card-body\" id=\"question1_preview\"></div></div>\n                        </div></div>");
 
@@ -168,7 +171,7 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
 
     _this3.variants = [];
 
-    _this3.question_body.firstChild.nextSibling.nextSibling.nextSibling.firstChild.addEventListener('click', function (e) {
+    _this3.question_body.querySelectorAll('#add_variant_btn')[0].addEventListener('click', function (e) {
       _this3.add_variant(e);
     });
 
@@ -179,13 +182,7 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
     return _this3;
   }
 
-  _createClass(OneChooseQuestion, [{
-    key: "add_variant",
-    value: function add_variant(e) {
-      this.variants.push(new FirstTypeVariant(this));
-      this.renderVariants();
-    }
-  }, {
+  _createClass(ChooseQuestion, [{
     key: "deleteVariant",
     value: function deleteVariant(variant) {
       if (this.variants.length <= 2) {
@@ -222,6 +219,38 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
       } finally {
         _iterator.f();
       }
+    }
+  }]);
+
+  return ChooseQuestion;
+}(Question);
+
+var OneChooseQuestion = /*#__PURE__*/function (_ChooseQuestion) {
+  _inherits(OneChooseQuestion, _ChooseQuestion);
+
+  var _super2 = _createSuper(OneChooseQuestion);
+
+  function OneChooseQuestion() {
+    var _this4;
+
+    _classCallCheck(this, OneChooseQuestion);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this4 = _super2.call.apply(_super2, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this4), "type", 1);
+
+    return _this4;
+  }
+
+  _createClass(OneChooseQuestion, [{
+    key: "add_variant",
+    value: function add_variant(e) {
+      this.variants.push(new FirstTypeVariant(this));
+      this.renderVariants();
     }
   }, {
     key: "getAnswer",
@@ -298,9 +327,9 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
         var variant = questionObject.variants[i];
 
         if (i == questionObject.answer) {
-          previewString += "<div class=\"row col-12 mt-3\">\n                            <div class=\"col-1\">\n                                <span class=\"variant-first-question variant-first-question-selected\"></span>\n                            </div>\n                            <span class=\"col-5 ml-3\">".concat(variant.variant_text, "</span>\n                            </div>");
+          previewString += "<div class=\"row col-12 mb-3\" id=\"question1_preview_item\">\n                            <div class=\"col-1\">\n                                <span class=\"variant-first-question variant-first-question-selected\"></span>\n                            </div>\n                            <span class=\"col-5 ml-3\">".concat(variant.variant_text, "</span>\n                            </div>");
         } else {
-          previewString += "<div class=\"row col-12 mt-3\">\n                            <div class=\"col-1\">\n                                <span class=\"variant-first-question\"></span>\n                            </div>\n                            <span class=\"col-5 ml-3\">".concat(variant.variant_text, "</span>\n                            </div>");
+          previewString += "<div class=\"row col-12 mb-3\" id=\"question1_preview_item\">\n                            <div class=\"col-1\">\n                                <span class=\"variant-first-question\"></span>\n                            </div>\n                            <span class=\"col-5 ml-3\">".concat(variant.variant_text, "</span>\n                            </div>");
         }
       }
 
@@ -310,43 +339,27 @@ var OneChooseQuestion = /*#__PURE__*/function (_Question) {
   }]);
 
   return OneChooseQuestion;
-}(Question);
+}(ChooseQuestion);
 
-var MultipleChoiceQuestion = /*#__PURE__*/function (_Question2) {
-  _inherits(MultipleChoiceQuestion, _Question2);
+var MultipleChoiceQuestion = /*#__PURE__*/function (_ChooseQuestion2) {
+  _inherits(MultipleChoiceQuestion, _ChooseQuestion2);
 
-  var _super2 = _createSuper(MultipleChoiceQuestion);
+  var _super3 = _createSuper(MultipleChoiceQuestion);
 
   function MultipleChoiceQuestion() {
-    var _this4;
+    var _this5;
 
     _classCallCheck(this, MultipleChoiceQuestion);
 
-    _this4 = _super2.call(this);
-
-    _defineProperty(_assertThisInitialized(_this4), "type", 2);
-
-    _this4.question_div = document.createElement('div');
-    _this4.question_header = htmlToElement("<textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>");
-    _this4.question_body = htmlToElement("<div class=\"row\">\n                        <h4 class=\"col-3\">\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B \u043E\u0442\u0432\u0435\u0442\u043E\u0432</h4>\n                        <div class=\"col-4\"><button class=\"btn btn-success\" id=\"add_multiple_variant\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\u0430\u0440\u0438\u0430\u043D\u0442</button></div>\n                    </div>");
-    _this4.variants_node = htmlToElement('<div class="container" id="variants"></div>');
-
-    _this4.question_div.appendChild(_this4.question_body);
-
-    _this4.question_div.appendChild(_this4.variants_node);
-
-    _this4.question_textarea = _this4.question_header;
-    _this4.variants = [];
-
-    _this4.question_body.firstChild.nextSibling.nextSibling.nextSibling.firstChild.addEventListener('click', function (e) {
-      _this4.add_variant(e);
-    });
-
-    for (var i = 0; i < 2; i++) {
-      _this4.add_variant();
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
     }
 
-    return _this4;
+    _this5 = _super3.call.apply(_super3, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this5), "type", 2);
+
+    return _this5;
   }
 
   _createClass(MultipleChoiceQuestion, [{
@@ -354,44 +367,6 @@ var MultipleChoiceQuestion = /*#__PURE__*/function (_Question2) {
     value: function add_variant() {
       this.variants.push(new SecondTypeVariant(this));
       this.renderVariants();
-    }
-  }, {
-    key: "deleteVariant",
-    value: function deleteVariant(variant) {
-      if (this.variants.length <= 2) {
-        return null;
-      }
-
-      this.variants.splice(this.variants.indexOf(variant), 1);
-      this.renderVariants();
-    }
-  }, {
-    key: "getVariants",
-    value: function getVariants() {
-      return this.variants.map(function (variant) {
-        return {
-          "variant_text": variant.text
-        };
-      });
-    }
-  }, {
-    key: "renderVariants",
-    value: function renderVariants() {
-      this.variants_node.innerHTML = '';
-
-      var _iterator3 = _createForOfIteratorHelper(this.variants),
-          _step3;
-
-      try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var variant = _step3.value;
-          this.variants_node.appendChild(variant.div);
-        }
-      } catch (err) {
-        _iterator3.e(err);
-      } finally {
-        _iterator3.f();
-      }
     }
   }, {
     key: "getAnswers",
@@ -416,7 +391,6 @@ var MultipleChoiceQuestion = /*#__PURE__*/function (_Question2) {
         "variants": this.getVariants(),
         "answers": this.getAnswers()
       };
-      questionObject['chlen'] = 3333;
 
       if (questionObject.sessions.length == 0) {
         return "Выберите одну или несколько сессий";
@@ -430,74 +404,89 @@ var MultipleChoiceQuestion = /*#__PURE__*/function (_Question2) {
         return "Добавьте минимум 2 варианта ответа";
       }
 
-      var _iterator4 = _createForOfIteratorHelper(questionObject.variants),
-          _step4;
+      var _iterator3 = _createForOfIteratorHelper(questionObject.variants),
+          _step3;
 
       try {
-        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-          var variant = _step4.value;
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var variant = _step3.value;
 
           if (!variant.variant_text) {
             return "\u0412\u044B \u0437\u0430\u043F\u043E\u043B\u043D\u0438\u043B\u0438 \u043D\u0435 \u0432\u0441\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442\u044B";
           }
         }
       } catch (err) {
-        _iterator4.e(err);
+        _iterator3.e(err);
       } finally {
-        _iterator4.f();
+        _iterator3.f();
       }
 
-      if (questionObject.answers == undefined) {
+      if (questionObject.answers.length == 0) {
         return "Укажите правильный ответ";
       }
 
       return JSON.stringify(questionObject);
     }
+  }, {
+    key: "renderPreview",
+    value: function renderPreview() {
+      var json = this.toJson();
+      var questionObject;
+
+      try {
+        questionObject = JSON.parse(json);
+      } catch (SyntaxError) {
+        this.question_preview.innerHTML = json;
+        return false;
+      }
+
+      var previewString = "";
+      previewString += "<div class=\"row col-12 justify-content-center\"><h2>".concat(questionObject.question_text, "</h2></div>");
+
+      for (var i in questionObject.variants) {
+        var variant = questionObject.variants[i];
+
+        if (questionObject.answers.indexOf(parseInt(i)) != -1) {
+          previewString += "<div class=\"row col-12 mb-3\" id=\"question1_preview_item\">\n                            <div class=\"col-1\">\n                                <span class=\"variant-second-question variant-second-question-selected\"></span>\n                            </div>\n                            <span class=\"col-5 ml-3\">".concat(variant.variant_text, "</span>\n                            </div>");
+        } else {
+          previewString += "<div class=\"row col-12 mb-3\" id=\"question1_preview_item\">\n                            <div class=\"col-1\">\n                                <span class=\"variant-second-question\"></span>\n                            </div>\n                            <span class=\"col-5 ml-3\">".concat(variant.variant_text, "</span>\n                            </div>");
+        }
+      }
+
+      this.question_preview.innerHTML = previewString;
+      renderJson();
+    }
   }]);
 
   return MultipleChoiceQuestion;
-}(Question);
+}(ChooseQuestion);
 
-var EnterAnswerQuestion = /*#__PURE__*/function (_Question3) {
-  _inherits(EnterAnswerQuestion, _Question3);
+var EnterAnswerQuestion = /*#__PURE__*/function (_Question2) {
+  _inherits(EnterAnswerQuestion, _Question2);
 
-  var _super3 = _createSuper(EnterAnswerQuestion);
+  var _super4 = _createSuper(EnterAnswerQuestion);
 
   function EnterAnswerQuestion() {
-    var _this5;
+    var _this6;
 
     _classCallCheck(this, EnterAnswerQuestion);
 
-    _this5 = _super3.call(this);
+    _this6 = _super4.call(this);
 
-    _defineProperty(_assertThisInitialized(_this5), "type", 4);
+    _defineProperty(_assertThisInitialized(_this6), "type", 4);
 
-    _this5.question_div = document.createElement('div');
-    _this5.question_header = htmlToElement("<div class=\"col-11\">\n                            <textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>\n                        </div>");
-    _this5.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <input class=\"col-7\" id=\"one_variant_input\" type=\"text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\" onchange=\"fourthTypeQuestion.validateAnswerInput();\"/>\n                        </div>");
+    _this6.question_div = document.createElement('div');
+    _this6.question_header = htmlToElement("<div class=\"col-11\">\n                            <textarea class=\"col-11 mt-5 ml-3 question_textarea\" name=\"question_text\" id=\"question_text\" placeholder=\"\u0412\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\" row=\"4\"></textarea>\n                        </div>");
+    _this6.question_body = htmlToElement("<div class=\"row justify-content-center\">\n                            <input class=\"col-7\" id=\"one_variant_input\" type=\"text\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u043E\u0442\u0432\u0435\u0442\u0430\"/>\n                        </div>");
 
-    _this5.question_div.appendChild(_this5.question_body);
+    _this6.question_div.appendChild(_this6.question_body);
 
-    _this5.question_textarea = _this5.question_header.getElementsByClassName("question_textarea")[0];
-    _this5.answer_input = _this5.question_body.firstChild.nextSibling;
-    return _this5;
+    _this6.question_textarea = _this6.question_header.getElementsByClassName("question_textarea")[0];
+    _this6.answer_input = _this6.question_body.firstChild.nextSibling;
+    return _this6;
   }
 
   _createClass(EnterAnswerQuestion, [{
-    key: "validateAnswerInput",
-    value: function validateAnswerInput() {
-      // let answer_string = this.answer_input.value.trim();
-      // this.answer_input.value = answer_string;
-      // if (answer_string.split(" ").length > 1 | answer_string.split(" ") == "") {
-      //     this.answer_input.style.borderColor = "#f44336";
-      //     return false;
-      // } else {
-      //     this.answer_input.style.borderColor = "#757575";
-      //     return true;
-      // }
-      return true;
-    }
-  }, {
     key: "getAnswer",
     value: function getAnswer() {
       return this.answer_input.value.trim();
@@ -520,10 +509,6 @@ var EnterAnswerQuestion = /*#__PURE__*/function (_Question3) {
         return "Выберите одну или несколько сессий";
       }
 
-      if (!this.validateAnswerInput()) {
-        return "Ответ должен состоять из одного слова";
-      }
-
       return JSON.stringify(questionObject);
     }
   }]);
@@ -540,7 +525,7 @@ var Letter = /*#__PURE__*/function () {
   }]);
 
   function Letter(parentWord) {
-    var _this6 = this;
+    var _this7 = this;
 
     var letter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 
@@ -550,12 +535,12 @@ var Letter = /*#__PURE__*/function () {
     this._letter = letter;
     this.div = htmlToElement("<div class=\"word-letter\">".concat(this.letter, "</div>"));
     this.div.addEventListener('click', function (e) {
-      _this6.parentWord.select({
+      _this7.parentWord.select({
         "event": e,
-        "letter": _this6
+        "letter": _this7
       });
 
-      _this6.parentWord.parentQuestion.renderPreview();
+      _this7.parentWord.parentQuestion.renderPreview();
     });
     this.selectedAs = {
       "as": "nothing"
@@ -636,20 +621,7 @@ var Word = /*#__PURE__*/function () {
     this._text = text;
     this.parentQuestion = parentQuestion;
     this.letters = [];
-    this.div = htmlToElement("<div class=\"word-wrap\">".concat(this.text, "</div>")); // this.div.addEventListener("click", e => {
-    //     let word = this.getWordByDiv(e.target);
-    //     if (word == null) {
-    //         word = this.getWordByDiv(e.target.parentNode);
-    //     }
-    //     if (word.selected){
-    //         word.selected = false;
-    //     } else {
-    //         word.selected = true;
-    //     }
-    //     word.render();
-    //     this.parentQuestion.renderPreview();
-    // });
-
+    this.div = htmlToElement("<div class=\"word-wrap\">".concat(this.text, "</div>"));
     this.selectedAs = {
       "as": "nothing"
     };
@@ -669,18 +641,18 @@ var Word = /*#__PURE__*/function () {
     value: function buildLetters() {
       var new_letters = [];
 
-      var _iterator5 = _createForOfIteratorHelper(this.text),
-          _step5;
+      var _iterator4 = _createForOfIteratorHelper(this.text),
+          _step4;
 
       try {
-        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-          var char = _step5.value;
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var char = _step4.value;
           new_letters.push(new Letter(this, char));
         }
       } catch (err) {
-        _iterator5.e(err);
+        _iterator4.e(err);
       } finally {
-        _iterator5.f();
+        _iterator4.f();
       }
 
       if (new_letters.map(function (letter) {
@@ -697,29 +669,23 @@ var Word = /*#__PURE__*/function () {
       this.div.innerHTML = '';
       this.buildLetters();
 
-      var _iterator6 = _createForOfIteratorHelper(this.letters),
-          _step6;
+      var _iterator5 = _createForOfIteratorHelper(this.letters),
+          _step5;
 
       try {
-        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-          var letter = _step6.value;
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var letter = _step5.value;
           this.div.appendChild(letter.div);
         }
       } catch (err) {
-        _iterator6.e(err);
+        _iterator5.e(err);
       } finally {
-        _iterator6.f();
+        _iterator5.f();
       }
     }
   }, {
     key: "render",
     value: function render() {
-      // if (this.selected){
-      //     this.div.classList.add("word-wrap-selected");
-      // } else {
-      //     this.div.classList.remove("word-wrap-selected");
-      // }
-      // console.log(this.selectedAs);
       switch (this.selectedAs.as) {
         case "nothing":
           this.div.style.backgroundColor = "rgba(0, 0, 0, 0)";
@@ -739,13 +705,6 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "select",
     value: function select(callback) {
-      // let word = this.getWordByDiv(this);
-      // if (word.selected){
-      //     word.selected = false;
-      // } else {
-      //     word.selected = true;
-      // }
-      // word.render();
       this.parentQuestion.select(callback);
     }
   }, {
@@ -757,21 +716,21 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "getWordByDiv",
     value: function getWordByDiv(div) {
-      var _iterator7 = _createForOfIteratorHelper(this.parentQuestion.words_list),
-          _step7;
+      var _iterator6 = _createForOfIteratorHelper(this.parentQuestion.words_list),
+          _step6;
 
       try {
-        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-          var word = _step7.value;
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var word = _step6.value;
 
           if (word.div === div) {
             return word;
           }
         }
       } catch (err) {
-        _iterator7.e(err);
+        _iterator6.e(err);
       } finally {
-        _iterator7.f();
+        _iterator6.f();
       }
 
       return null;
@@ -779,21 +738,21 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "getLetterByDiv",
     value: function getLetterByDiv(div) {
-      var _iterator8 = _createForOfIteratorHelper(this.letters),
-          _step8;
+      var _iterator7 = _createForOfIteratorHelper(this.letters),
+          _step7;
 
       try {
-        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-          var letter = _step8.value;
+        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+          var letter = _step7.value;
 
           if (letter.div === div) {
             return letter;
           }
         }
       } catch (err) {
-        _iterator8.e(err);
+        _iterator7.e(err);
       } finally {
-        _iterator8.f();
+        _iterator7.f();
       }
 
       return null;
@@ -835,39 +794,39 @@ var TransformationPalette = /*#__PURE__*/function () {
     this.div = document.createElement('div');
     this.div.classList.add('row');
 
-    var _iterator9 = _createForOfIteratorHelper(items),
-        _step9;
+    var _iterator8 = _createForOfIteratorHelper(items),
+        _step8;
 
     try {
-      for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-        var item = _step9.value;
+      for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+        var item = _step8.value;
         this.div.appendChild(item.label);
       }
     } catch (err) {
-      _iterator9.e(err);
+      _iterator8.e(err);
     } finally {
-      _iterator9.f();
+      _iterator8.f();
     }
   }
 
   _createClass(TransformationPalette, [{
     key: "getItemByNode",
     value: function getItemByNode(node) {
-      var _iterator10 = _createForOfIteratorHelper(this.items),
-          _step10;
+      var _iterator9 = _createForOfIteratorHelper(this.items),
+          _step9;
 
       try {
-        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-          var item = _step10.value;
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var item = _step9.value;
 
           if (item.label === node) {
             return item;
           }
         }
       } catch (err) {
-        _iterator10.e(err);
+        _iterator9.e(err);
       } finally {
-        _iterator10.f();
+        _iterator9.f();
       }
 
       throw new Error("Such TransformationPaletteItem was not found");
@@ -875,21 +834,21 @@ var TransformationPalette = /*#__PURE__*/function () {
   }, {
     key: "getSelectedPaletteItem",
     value: function getSelectedPaletteItem() {
-      var _iterator11 = _createForOfIteratorHelper(this.items),
-          _step11;
+      var _iterator10 = _createForOfIteratorHelper(this.items),
+          _step10;
 
       try {
-        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-          var item = _step11.value;
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+          var item = _step10.value;
 
           if (item.label.firstChild.checked) {
             return item;
           }
         }
       } catch (err) {
-        _iterator11.e(err);
+        _iterator10.e(err);
       } finally {
-        _iterator11.f();
+        _iterator10.f();
       }
 
       throw new Error("Not found slected palette item");
@@ -926,30 +885,30 @@ var SelectorStrategy = /*#__PURE__*/function () {
 var SelectMissWord = /*#__PURE__*/function (_SelectorStrategy) {
   _inherits(SelectMissWord, _SelectorStrategy);
 
-  var _super4 = _createSuper(SelectMissWord);
+  var _super5 = _createSuper(SelectMissWord);
 
   function SelectMissWord() {
     _classCallCheck(this, SelectMissWord);
 
-    return _super4.apply(this, arguments);
+    return _super5.apply(this, arguments);
   }
 
   _createClass(SelectMissWord, [{
     key: "unselectLetters",
     value: function unselectLetters(letters) {
-      var _iterator12 = _createForOfIteratorHelper(letters),
-          _step12;
+      var _iterator11 = _createForOfIteratorHelper(letters),
+          _step11;
 
       try {
-        for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-          var letter = _step12.value;
+        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+          var letter = _step11.value;
           letter.selectLetter("nothing");
           letter.render();
         }
       } catch (err) {
-        _iterator12.e(err);
+        _iterator11.e(err);
       } finally {
-        _iterator12.f();
+        _iterator11.f();
       }
     }
   }, {
@@ -975,12 +934,12 @@ var SelectMissWord = /*#__PURE__*/function (_SelectorStrategy) {
 var SelectMissLetter = /*#__PURE__*/function (_SelectorStrategy2) {
   _inherits(SelectMissLetter, _SelectorStrategy2);
 
-  var _super5 = _createSuper(SelectMissLetter);
+  var _super6 = _createSuper(SelectMissLetter);
 
   function SelectMissLetter() {
     _classCallCheck(this, SelectMissLetter);
 
-    return _super5.apply(this, arguments);
+    return _super6.apply(this, arguments);
   }
 
   _createClass(SelectMissLetter, [{
@@ -1005,30 +964,30 @@ var SelectMissLetter = /*#__PURE__*/function (_SelectorStrategy2) {
 var SelectMixWord = /*#__PURE__*/function (_SelectorStrategy3) {
   _inherits(SelectMixWord, _SelectorStrategy3);
 
-  var _super6 = _createSuper(SelectMixWord);
+  var _super7 = _createSuper(SelectMixWord);
 
   function SelectMixWord() {
     _classCallCheck(this, SelectMixWord);
 
-    return _super6.apply(this, arguments);
+    return _super7.apply(this, arguments);
   }
 
   _createClass(SelectMixWord, [{
     key: "unselectLetters",
     value: function unselectLetters(letters) {
-      var _iterator13 = _createForOfIteratorHelper(letters),
-          _step13;
+      var _iterator12 = _createForOfIteratorHelper(letters),
+          _step12;
 
       try {
-        for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-          var letter = _step13.value;
+        for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+          var letter = _step12.value;
           letter.selectLetter("nothing");
           letter.render();
         }
       } catch (err) {
-        _iterator13.e(err);
+        _iterator12.e(err);
       } finally {
-        _iterator13.f();
+        _iterator12.f();
       }
     }
   }, {
@@ -1051,22 +1010,13 @@ var SelectMixWord = /*#__PURE__*/function (_SelectorStrategy3) {
   return SelectMixWord;
 }(SelectorStrategy);
 
-var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
-  _inherits(InsertWordsQuestion, _Question4);
+var InsertWordsQuestion = /*#__PURE__*/function (_Question3) {
+  _inherits(InsertWordsQuestion, _Question3);
 
-  var _super7 = _createSuper(InsertWordsQuestion);
+  var _super8 = _createSuper(InsertWordsQuestion);
 
   _createClass(InsertWordsQuestion, null, [{
     key: "insertTypes",
-    // insertTypes = { // designation of selected object in json
-    //     "letter": {
-    //         "missed": "{square}"
-    //     },  
-    //     "word": {
-    //         "missed": "{missed}",
-    //         "mixed": "{missed}"
-    //     }
-    // };
     get: function get() {
       return {
         // designation of selected object in json
@@ -1082,42 +1032,42 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
   }]);
 
   function InsertWordsQuestion(palette) {
-    var _this7;
+    var _this8;
 
     _classCallCheck(this, InsertWordsQuestion);
 
-    _this7 = _super7.call(this);
+    _this8 = _super8.call(this);
 
-    _defineProperty(_assertThisInitialized(_this7), "type", 5);
+    _defineProperty(_assertThisInitialized(_this8), "type", 5);
 
-    _this7.question_div = document.createElement('div');
-    _this7.question_header = htmlToElement("<div class=\"col-10 input-div mt-5\" id=\"div_input\" contenteditable=true placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\"></div>");
-    _this7.palette = palette;
-    _this7.question_body = htmlToElement("<div class=\"row justify-content-center\"> \n                            <div class=\"container\"></div>\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
+    _this8.question_div = document.createElement('div');
+    _this8.question_header = htmlToElement("<div class=\"col-10 input-div mt-5\" id=\"div_input\" contenteditable=true placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0441\u0442 \u0432\u043E\u043F\u0440\u043E\u0441\u0430\"></div>");
+    _this8.palette = palette;
+    _this8.question_body = htmlToElement("<div class=\"row justify-content-center\"> \n                            <div class=\"container\"></div>\n                            <div class=\"col-11 mt-3\" id=\"show_words\"></div>\n                        </div>");
 
-    _this7.question_body.firstChild.nextSibling.appendChild(_this7.palette.div);
+    _this8.question_body.firstChild.nextSibling.appendChild(_this8.palette.div);
 
-    _this7.question_preview_part = htmlToElement("<div class=\"container\"><div class=\"row mt-3 justify-content-center\"><h2>\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440:</h1></div>\n                        <div class=\"row mt-3 justify-content-center\">\n                            <div class=\"col-11\" id=\"question_example\"></div>\n                        </div></div>");
-    _this7.question_preview = _this7.question_preview_part.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
+    _this8.question_preview_part = htmlToElement("<div class=\"container\"><div class=\"row mt-3 justify-content-center\"><h2>\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440:</h1></div>\n                        <div class=\"row mt-3 justify-content-center\">\n                            <div class=\"col-11\" id=\"question_example\"></div>\n                        </div></div>");
+    _this8.question_preview = _this8.question_preview_part.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
 
-    _this7.question_div.appendChild(_this7.question_body);
+    _this8.question_div.appendChild(_this8.question_body);
 
-    _this7.question_div.appendChild(_this7.question_preview_part);
+    _this8.question_div.appendChild(_this8.question_preview_part);
 
-    _this7.words_list = [];
-    _this7.div_input = _this7.question_header;
+    _this8.words_list = [];
+    _this8.div_input = _this8.question_header;
 
-    _this7.div_input.addEventListener('keyup', function (e) {
-      var change = _this7.compareWords(); // console.log(change);
+    _this8.div_input.addEventListener('keyup', function (e) {
+      var change = _this8.compareWords(); // console.log(change);
 
 
-      _this7.processChange(change);
+      _this8.processChange(change);
 
-      _this7.renderPreview();
+      _this8.renderPreview();
     });
 
-    _this7.words_show_div = _this7.question_div.firstChild.firstChild.nextSibling.nextSibling.nextSibling;
-    return _this7;
+    _this8.words_show_div = _this8.question_div.firstChild.firstChild.nextSibling.nextSibling.nextSibling;
+    return _this8;
   }
 
   _createClass(InsertWordsQuestion, [{
@@ -1139,12 +1089,12 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
       var slice;
       var wordText;
 
-      var _iterator14 = _createForOfIteratorHelper(this.words_list),
-          _step14;
+      var _iterator13 = _createForOfIteratorHelper(this.words_list),
+          _step13;
 
       try {
-        for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-          var word = _step14.value;
+        for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+          var word = _step13.value;
           wordText = word.text;
           firstIndex = inputText.indexOf(wordText);
           slice = inputText.slice(0, firstIndex);
@@ -1153,9 +1103,9 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
           answerString += word.questionText;
         }
       } catch (err) {
-        _iterator14.e(err);
+        _iterator13.e(err);
       } finally {
-        _iterator14.f();
+        _iterator13.f();
       }
 
       slice = inputText.slice(0);
@@ -1165,13 +1115,6 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
   }, {
     key: "getAnswer",
     value: function getAnswer() {
-      // let answers = [];
-      // for (let word of this.words_list){
-      //     if (word.selected){
-      //         answers.push(word.text);
-      //     }
-      // }
-      // return answers;
       var answer = {
         "variant1": {
           "missed": [],
@@ -1181,12 +1124,12 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
         "variant2": []
       };
 
-      var _iterator15 = _createForOfIteratorHelper(this.words_list),
-          _step15;
+      var _iterator14 = _createForOfIteratorHelper(this.words_list),
+          _step14;
 
       try {
-        for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-          var word = _step15.value;
+        for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+          var word = _step14.value;
 
           if (word.selectedAs.as != "nothing") {
             answer.variant2.push(word.text);
@@ -1204,12 +1147,12 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
             continue;
           }
 
-          var _iterator16 = _createForOfIteratorHelper(word.letters),
-              _step16;
+          var _iterator15 = _createForOfIteratorHelper(word.letters),
+              _step15;
 
           try {
-            for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-              var letter = _step16.value;
+            for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+              var letter = _step15.value;
 
               if (letter.selectedAs.as != "nothing") {
                 answer.variant2.push(letter.letter);
@@ -1222,15 +1165,15 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
               }
             }
           } catch (err) {
-            _iterator16.e(err);
+            _iterator15.e(err);
           } finally {
-            _iterator16.f();
+            _iterator15.f();
           }
         }
       } catch (err) {
-        _iterator15.e(err);
+        _iterator14.e(err);
       } finally {
-        _iterator15.f();
+        _iterator14.f();
       }
 
       return answer;
@@ -1370,19 +1313,19 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
       } // console.log(words_list);
 
 
-      var _iterator17 = _createForOfIteratorHelper(this.words_list),
-          _step17;
+      var _iterator16 = _createForOfIteratorHelper(this.words_list),
+          _step16;
 
       try {
-        for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-          var word = _step17.value;
+        for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+          var word = _step16.value;
           // console.log(word, words_list)
           words.push(word.text);
         }
       } catch (err) {
-        _iterator17.e(err);
+        _iterator16.e(err);
       } finally {
-        _iterator17.f();
+        _iterator16.f();
       }
 
       return words;
@@ -1392,19 +1335,19 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
     value: function renderWords() {
       this.words_show_div.innerHTML = "";
 
-      var _iterator18 = _createForOfIteratorHelper(this.words_list),
-          _step18;
+      var _iterator17 = _createForOfIteratorHelper(this.words_list),
+          _step17;
 
       try {
-        for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-          var word = _step18.value;
+        for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+          var word = _step17.value;
           this.words_show_div.appendChild(word.div);
           word.render();
         }
       } catch (err) {
-        _iterator18.e(err);
+        _iterator17.e(err);
       } finally {
-        _iterator18.f();
+        _iterator17.f();
       }
     }
   }, {
@@ -1425,22 +1368,22 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
       var slice;
       var findText = ["{missed}", "{square}", "{mixed}"];
 
-      var _iterator19 = _createForOfIteratorHelper(questionObject.answer.variant2),
-          _step19;
+      var _iterator18 = _createForOfIteratorHelper(questionObject.answer.variant2),
+          _step18;
 
       try {
-        for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-          var word = _step19.value;
+        for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+          var word = _step18.value;
           var fText = void 0; // в этой переменной будут находиться значения из findText
 
           var found = {}; // здесь будут находиться значения такого вида: fText: index
 
-          var _iterator20 = _createForOfIteratorHelper(findText),
-              _step20;
+          var _iterator19 = _createForOfIteratorHelper(findText),
+              _step19;
 
           try {
-            for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
-              fText = _step20.value;
+            for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+              fText = _step19.value;
               // заполняем found 
               firstIndex = questionObject.question_text.indexOf(fText);
 
@@ -1450,9 +1393,9 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
               }
             }
           } catch (err) {
-            _iterator20.e(err);
+            _iterator19.e(err);
           } finally {
-            _iterator20.f();
+            _iterator19.f();
           }
 
           firstIndex = Math.min.apply(Math, _toConsumableArray(Object.values(found))); // минимальным значением будет первое вхождение 
@@ -1487,9 +1430,9 @@ var InsertWordsQuestion = /*#__PURE__*/function (_Question4) {
           questionObject.question_text = questionObject.question_text.slice(firstIndex + fText.length);
         }
       } catch (err) {
-        _iterator19.e(err);
+        _iterator18.e(err);
       } finally {
-        _iterator19.f();
+        _iterator18.f();
       }
 
       answerString += questionObject.question_text; // добавляем в строку ответа оставшуюся часть вопроса
@@ -1553,21 +1496,21 @@ function getQuestionObject() {
 function getSessions() {
   var sessions = [];
 
-  var _iterator21 = _createForOfIteratorHelper(session_select),
-      _step21;
+  var _iterator20 = _createForOfIteratorHelper(session_select),
+      _step20;
 
   try {
-    for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
-      var checkbox = _step21.value;
+    for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+      var checkbox = _step20.value;
 
       if (checkbox.checked) {
         sessions.push(parseInt(checkbox.name));
       }
     }
   } catch (err) {
-    _iterator21.e(err);
+    _iterator20.e(err);
   } finally {
-    _iterator21.f();
+    _iterator20.f();
   }
 
   return sessions;

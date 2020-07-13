@@ -228,3 +228,16 @@ textarea:focus {
     border-color: #1c941c;
 }
 
+.variant-second-question {
+    width: 20px !important;
+    height: 20px !important;
+    border: 2px solid #FF7676;
+    border-radius: 2px;
+    padding-right: 18px;
+}
+
+.variant-second-question-selected {
+    background-color: #1c941c;
+    border-color: #1c941c;
+}
+

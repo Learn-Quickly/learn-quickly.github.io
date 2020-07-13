@@ -69,7 +69,10 @@ class SecondTypeVariant {
     constructor(parentQuestion){
         this.parentQuestion = parentQuestion;
         this.div = htmlToElement(`<div class="row mt-3">
-                                        <input type="checkbox" name="true_answer" value="" class="align-self-center mr-3 true_answer">
+                                        <input type="checkbox" name="true_answer" value="" class="align-self-center mr-3 true_answer" style="
+    width: 20px;
+    height: 20px;
+">
                                         <div class="card col-11">
                                             <div class="card-body">
                                                 <div class="row">
@@ -88,6 +91,14 @@ class SecondTypeVariant {
         });
         this.checkbox = this.div.firstChild.nextSibling;
         this.variantInput = this.div.querySelectorAll('[name=answer_text]')[0]
+
+        this.variantInput.addEventListener('keyup', e => {
+            this.parentQuestion.renderPreview();
+        });
+
+        this.checkbox.addEventListener('click', e => {
+            this.parentQuestion.renderPreview();
+        });
     }
 
     get selected(){
@@ -226,7 +237,7 @@ class OneChooseQuestion extends ChooseQuestion {
         }
 
         let previewString = "";
-
+        previewString += `<div class="row col-12 justify-content-center"><h2>${questionObject.question_text}</h2></div>`;
         for (let i in questionObject.variants){
             let variant = questionObject.variants[i];
             if (i == questionObject.answer){
@@ -297,11 +308,48 @@ class MultipleChoiceQuestion extends ChooseQuestion {
             }
         }
 
-        if (questionObject.answers == undefined){
+        if (questionObject.answers.length == 0){
             return "Укажите правильный ответ";
         }
 
         return JSON.stringify(questionObject);
+    }
+
+    renderPreview(){
+        let json = this.toJson();
+
+        let questionObject;
+
+        try {
+            questionObject = JSON.parse(json);
+        } catch (SyntaxError) {
+            this.question_preview.innerHTML = json;
+            return false;
+        }
+
+        let previewString = "";
+        previewString += `<div class="row col-12 justify-content-center"><h2>${questionObject.question_text}</h2></div>`;
+        for (let i in questionObject.variants){
+            let variant = questionObject.variants[i];
+            if (questionObject.answers.indexOf(parseInt(i)) != -1){
+                previewString += `<div class="row col-12 mb-3" id="question1_preview_item">
+                            <div class="col-1">
+                                <span class="variant-second-question variant-second-question-selected"></span>
+                            </div>
+                            <span class="col-5 ml-3">${variant.variant_text}</span>
+                            </div>`
+            } else {
+                previewString += `<div class="row col-12 mb-3" id="question1_preview_item">
+                            <div class="col-1">
+                                <span class="variant-second-question"></span>
+                            </div>
+                            <span class="col-5 ml-3">${variant.variant_text}</span>
+                            </div>`
+            }
+        }
+
+        this.question_preview.innerHTML = previewString;
+        renderJson();
     }
 }
 
