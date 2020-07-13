@@ -1,13 +1,13 @@
 function copyJSON() {
-  if (document.selection) {
-    let range = document.body.createTextRange();
-    range.moveToElementText(document.getElementById('json_place'));
-    range.select().createTextRange();
-    document.execCommand("copy");
-  } else if (window.getSelection) {
-    let range = document.createRange();
-    range.selectNode(document.getElementById('json_place'));
-    window.getSelection().addRange(range);
-    document.execCommand("copy");
-  }
+  let div = document.getElementById('json_place');
+  let text = div.innerText;
+  let textArea = document.createElement('textarea');
+  textArea.width = '1px';
+  textArea.heigth = '1px';
+  textArea.background = 'transparents';
+  textArea.value = text;
+  document.body.append(textArea);;
+  textArea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textArea);
 }
